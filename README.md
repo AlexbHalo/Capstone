@@ -1,2 +1,2 @@
 # Ascension
-We are here to help you **Ascend**
+We are here to help you <sup>**Ascend**</sup>
