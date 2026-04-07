@@ -19,3 +19,8 @@ button {
   /*style control*/
   padding: 15px 30px;
 }
+
+img {
+  position: relative;
+  left: 1580px;
+}
