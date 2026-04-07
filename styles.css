@@ -19,19 +19,15 @@ button {
   /*style control*/
   padding: 15px 30px;
 }
-
-pl {
-  color: white;
-  position: relative;
-  left: 1480px;
-  top: 30px; 
-}
-
+  
 img {
   position: relative;
   left: 1610px;
 }
 
-.hidden {
+.hidden {color: white;
+  position: relative;
+  left: 1480px;
+  top: 30px; 
   display: none;
 }
