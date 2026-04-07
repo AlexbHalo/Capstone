@@ -25,7 +25,8 @@ img {
   left: 1610px;
 }
 
-.hidden {color: white;
+.hidden {
+  color: white;
   position: relative;
   left: 1480px;
   top: 30px; 
