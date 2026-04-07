@@ -34,7 +34,7 @@ pl {
   color: white;
   position: relative;
   left: 1430px;
-  padding-top: 50px;
+  top: 30px; 
 }
 
 img {
