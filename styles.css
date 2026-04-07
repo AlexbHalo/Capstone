@@ -30,6 +30,10 @@ buttonL {
   padding: 15px 30px;
 }
 
+p {
+  color: white;
+}
+
 img {
   position: relative;
   left: 1590px;
