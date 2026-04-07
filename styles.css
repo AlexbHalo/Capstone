@@ -31,3 +31,7 @@ img {
   position: relative;
   left: 1610px;
 }
+
+.hidden {
+  display: none;
+}
