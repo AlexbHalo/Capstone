@@ -20,6 +20,16 @@ button {
   padding: 15px 30px;
 }
 
+buttonL {
+  background-color: palegoldenrod;
+  position: relative;
+  top: 20px;   
+  left: 1580px;  
+  /*button control*/
+  /*style control*/
+  padding: 15px 30px;
+}
+
 img {
   position: relative;
   left: 1590px;
