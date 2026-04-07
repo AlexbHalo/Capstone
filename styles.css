@@ -13,8 +13,9 @@ h3 {
 button {
   background-color: palegoldenrod;
   position: relative;
-  top: 20px;   /* Moves it 20px down from its original spot */
-  left: 1620px;  /* Moves it 30px right from its original spot */
-
+  top: 20px;   
+  left: 1620px;  
+  /*button control*/
+  /*style control*/
   padding: 15px 30px;
 }
