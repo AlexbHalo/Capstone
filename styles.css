@@ -14,5 +14,5 @@ button {
   background-color: palegoldenrod;
   position: relative;
   top: 20px;   /* Moves it 20px down from its original spot */
-  left: 1400px;  /* Moves it 30px right from its original spot */
+  left: 1600px;  /* Moves it 30px right from its original spot */
 }
