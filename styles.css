@@ -30,4 +30,5 @@ div .hidden {
   position: relative;
   left: 1580px;
   top: 30px; 
+  display: hide;
 }
