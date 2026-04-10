@@ -1,40 +1,62 @@
-body {
-  background-color: black;
-}
-h1 {
-  color: white;
+ body {
+   background-color: black;
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+ }
+
+ h1 {
+   color: white;
+   text-align: center;
+ }
+
+ h3 {
+   color: palegoldenrod;
+   text-align: center;
+ }
+
+/* Center page contents inside the existing container */
+.container-lg {
   text-align: center;
 }
-h3 {
-  color: palegoldenrod;
+ 
+ button {
+   background-color: palegoldenrod;
+  border: none;
+  cursor: pointer;
+  padding: 12px 24px;
+  margin: 12px 8px;
+  font-size: 1rem;
+  display: inline-block;
+ }
+
+ img {
+  display: block;
+  margin: 18px auto;
+  max-width: 80%;
+  height: auto;
+ }
+ 
+/* Login form visibility + layout */
+#loginForm.hidden {
+  display: none;
+}
+
+#loginForm.show {
+  display: block;
+  margin: 12px auto;
+   color: white;
   text-align: center;
 }
 
-button {
-  background-color: palegoldenrod;
-  position: relative;
-  top: 20px;   
-  left: 1580px;  
-  /*button control*/
-  /*style control*/
-  padding: 15px 30px;
-}
-  
-img {
-  position: relative;
-  left: 1610px;
-}
-
-div .hidden {
-  color: white;
-  position: relative;
-  left: 1580px;
-  top: 30px; 
-  display: hide;
+#loginForm p {
+  margin: 6px 0;
+ }
+ 
+input[type="text"], input[type="password"] {
+  padding: 6px 8px;
+  margin-left: 6px;
 }
 
 p {
-  position: relative;
-  left: 1560px;
-  top: 30px; 
-}
+  color: white;
+ }
