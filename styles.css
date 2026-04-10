@@ -32,3 +32,9 @@ div .hidden {
   top: 30px; 
   display: hide;
 }
+
+p {
+  position: relative;
+  left: 1580px;
+  top: 30px; 
+}
