@@ -25,7 +25,10 @@
     <script>
     document.addEventListener('DOMContentLoaded', function(){
       try {
-        const nick = localStorage.getItem('savedNickname');
+        const current = localStorage.getItem('currentUser');
+        const usersRaw = localStorage.getItem('users');
+        const users = usersRaw ? JSON.parse(usersRaw) : {};
+        const nick = current && users[current] ? users[current].nickname : null;
         const el = document.getElementById('userNickname');
         if (el) el.textContent = nick ? ` ${nick}` : '';
       } catch (err) {}

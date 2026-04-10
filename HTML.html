@@ -53,7 +53,6 @@
     </a>
 
     <button onclick="login()">Log-In Now</button>
-
     <div id="loginForm" class="hidden">
       <p>Username: <input type="text" id="loginUsername"></p>
       <p>Password: <input type="password" id="loginPassword"></p>
@@ -124,17 +123,20 @@
         // prevent navigation
         return false;
       }
-      // check saved demo credentials
+      // validate against stored users object in localStorage
       try {
-        const savedU = localStorage.getItem('savedUsername');
-        const savedP = localStorage.getItem('savedPassword');
-        if (!savedU || !savedP || savedU !== u.value || savedP !== p.value) {
+        const usersRaw = localStorage.getItem('users');
+        const users = usersRaw ? JSON.parse(usersRaw) : {};
+        const user = users[u.value];
+        if (!user || user.password !== p.value) {
           const err = document.getElementById('loginError');
           if (err) err.textContent = 'Invalid username or password';
           u.classList.add('blank');
           p.classList.add('blank');
           return false;
         }
+        // set current user for Main.html to read
+        localStorage.setItem('currentUser', u.value);
       } catch (err) {}
       // navigate to Main.html
       window.location.href = 'Main.html';

@@ -42,14 +42,19 @@
         updateCreateState();
         return false;
       }
-      const u = document.getElementById('signupUsername').value;
+      const u = document.getElementById('signupUsername').value.trim();
       const p = document.getElementById('signupPassword').value;
-      const n = document.getElementById('signupNickname').value;
-      // save demo credentials locally
+      const n = document.getElementById('signupNickname').value.trim();
+      // save account into a `users` object in localStorage
       try {
-        localStorage.setItem('savedUsername', u);
-        localStorage.setItem('savedPassword', p);
-        localStorage.setItem('savedNickname', n);
+        const usersRaw = localStorage.getItem('users');
+        const users = usersRaw ? JSON.parse(usersRaw) : {};
+        if (users[u]) {
+          alert('Username already exists — choose another.');
+          return false;
+        }
+        users[u] = { password: p, nickname: n };
+        localStorage.setItem('users', JSON.stringify(users));
       } catch (err) {}
       alert('Account created (demo). You can now Log-In.');
       return false;
