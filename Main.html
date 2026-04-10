@@ -27,7 +27,7 @@
       try {
         const nick = localStorage.getItem('savedNickname');
         const el = document.getElementById('userNickname');
-        if (el) el.textContent = nick ? `Nickname: ${nick}` : '';
+        if (el) el.textContent = nick ? ` ${nick}` : '';
       } catch (err) {}
     });
     </script>
