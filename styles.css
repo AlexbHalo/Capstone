@@ -77,3 +77,9 @@ input[type="text"], input[type="password"] { padding: 6px 8px; }
 .blank { color: #b30000; }
 .blank::placeholder { color: #b30000; }
 #loginError { color: #ff6b6b; margin-top: 8px; font-weight: 600; }
+
+/* Page border: visible on all HTML pages */
+body {
+  border: 6px solid palegoldenrod;
+  border-radius: 10px;
+}
