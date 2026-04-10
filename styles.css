@@ -68,3 +68,7 @@ input[type="text"], input[type="password"] { padding: 6px 8px; }
   button { width: 100%; max-width: 320px; }
   img { width: 60%; }
 }
+
+/* Enter button visibility (hidden until login click) */
+#enterBtn.hidden { display: none; }
+#enterBtn.show { display: inline-block; }
