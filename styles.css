@@ -72,3 +72,7 @@ input[type="text"], input[type="password"] { padding: 6px 8px; }
 /* Enter button visibility (hidden until login click) */
 #enterBtn.hidden { display: none; }
 #enterBtn.show { display: inline-block; }
+
+/* Blank input indicator */
+.blank { color: #b30000; }
+.blank::placeholder { color: #b30000; }

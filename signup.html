@@ -12,18 +12,39 @@
 </head>
 <body>
     <h1>Create An Account</h1>
-    <div id="Sign-up Form" class="show">
-        <p>Username: <input type="text"></p>
-        <p>Password: <input type="password"></p>
-        <p>Nickname: <input type="text"></p>
+    <div id="signupForm" class="show">
+      <p>Username: <input type="text" id="signupUsername"></p>
+      <p>Password: <input type="password" id="signupPassword"></p>
+      <p>Nickname: <input type="text" id="signupNickname"></p>
     </div>
     <br></br>
 	  <br></br>
     <br></br>
 	  <br></br>
-    <a href="HTML.html">
+    <a href="HTML.html" id="backLink" onclick="return validateSignup(event)">
       <button>Back to Log-In</button>
     </a>
+    <script>
+    const BLANK_MSG = 'Can Not Be Left Blank';
+    function validateSignup(e) {
+      const u = document.getElementById('signupUsername');
+      const p = document.getElementById('signupPassword');
+      const n = document.getElementById('signupNickname');
+      let blocked = false;
+      [u,p,n].forEach(el => {
+        if (!el.value) { el.value = BLANK_MSG; el.classList.add('blank'); blocked = true; }
+      });
+      return !blocked;
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      ['signupUsername','signupPassword','signupNickname'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('focus', function(){ if (this.value === BLANK_MSG) { this.value=''; this.classList.remove('blank'); } });
+        el.addEventListener('blur', function(){ if (!this.value) { this.value = BLANK_MSG; this.classList.add('blank'); } });
+      });
+    });
+    </script>
 </body>
 </head>
 </html>
