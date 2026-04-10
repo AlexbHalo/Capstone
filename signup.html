@@ -22,9 +22,7 @@
     <br></br>
 	  <br></br>
     <button id="createBtn" disabled onclick="return createAccount(event)">Create</button>
-    <a href="HTML.html" id="backLink" onclick="return validateSignup(event)">
-      <button>Back to Log-In</button>
-    </a>
+    <button id="backLink" onclick="return backToLogin(event)">Back to Log-In</button>
     <script>
     const BLANK_MSG = 'Can Not Be Left Blank';
     function updateCreateState() {
@@ -59,23 +57,55 @@
       alert('Account created (demo). You can now Log-In.');
       return false;
     }
-    function validateSignup(e) {
+    function validateSignup() {
       const u = document.getElementById('signupUsername');
       const p = document.getElementById('signupPassword');
       const n = document.getElementById('signupNickname');
       let blocked = false;
       [u,p,n].forEach(el => {
-        if (!el.value) { el.value = BLANK_MSG; el.classList.add('blank'); blocked = true; }
+        if (!el.value) {
+          // if it's a password, temporarily show message by switching to text
+          if (el.type === 'password') { el.dataset.origType = 'password'; el.type = 'text'; }
+          el.value = BLANK_MSG;
+          el.classList.add('blank');
+          blocked = true;
+        }
       });
       return !blocked;
+    }
+
+    function backToLogin(e) {
+      const ok = validateSignup();
+      if (!ok) {
+        updateCreateState();
+        return false;
+      }
+      // navigate to login page
+      window.location.href = 'HTML.html';
+      return false;
     }
     document.addEventListener('DOMContentLoaded', function(){
       ['signupUsername','signupPassword','signupNickname'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener('input', updateCreateState);
-        el.addEventListener('focus', function(){ if (this.value === BLANK_MSG) { this.value=''; this.classList.remove('blank'); } });
-        el.addEventListener('blur', function(){ if (!this.value) { this.value = BLANK_MSG; this.classList.add('blank'); updateCreateState(); } });
+        el.addEventListener('focus', function(){
+          if (this.value === BLANK_MSG) {
+            this.value='';
+            this.classList.remove('blank');
+            // restore password type if we changed it
+            if (this.dataset.origType) { this.type = this.dataset.origType; delete this.dataset.origType; }
+          }
+        });
+        el.addEventListener('blur', function(){
+          if (!this.value) {
+            // temporarily switch password to text to show message
+            if (this.type === 'password') { this.dataset.origType = 'password'; this.type = 'text'; }
+            this.value = BLANK_MSG;
+            this.classList.add('blank');
+            updateCreateState();
+          }
+        });
       });
       // initialize button state
       updateCreateState();
