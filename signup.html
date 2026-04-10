@@ -21,11 +21,39 @@
 	  <br></br>
     <br></br>
 	  <br></br>
+    <button id="createBtn" disabled onclick="return createAccount(event)">Create</button>
     <a href="HTML.html" id="backLink" onclick="return validateSignup(event)">
       <button>Back to Log-In</button>
     </a>
     <script>
     const BLANK_MSG = 'Can Not Be Left Blank';
+    function updateCreateState() {
+      const u = document.getElementById('signupUsername');
+      const p = document.getElementById('signupPassword');
+      const n = document.getElementById('signupNickname');
+      const createBtn = document.getElementById('createBtn');
+      if (!u || !p || !n || !createBtn) return;
+      const allFilled = u.value && u.value !== BLANK_MSG && p.value && p.value !== BLANK_MSG && n.value && n.value !== BLANK_MSG;
+      createBtn.disabled = !allFilled;
+    }
+    function createAccount(e) {
+      const ok = validateSignup(e);
+      if (!ok) {
+        updateCreateState();
+        return false;
+      }
+      const u = document.getElementById('signupUsername').value;
+      const p = document.getElementById('signupPassword').value;
+      const n = document.getElementById('signupNickname').value;
+      // save demo credentials locally
+      try {
+        localStorage.setItem('savedUsername', u);
+        localStorage.setItem('savedPassword', p);
+        localStorage.setItem('savedNickname', n);
+      } catch (err) {}
+      alert('Account created (demo). You can now Log-In.');
+      return false;
+    }
     function validateSignup(e) {
       const u = document.getElementById('signupUsername');
       const p = document.getElementById('signupPassword');
@@ -40,9 +68,12 @@
       ['signupUsername','signupPassword','signupNickname'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
+        el.addEventListener('input', updateCreateState);
         el.addEventListener('focus', function(){ if (this.value === BLANK_MSG) { this.value=''; this.classList.remove('blank'); } });
-        el.addEventListener('blur', function(){ if (!this.value) { this.value = BLANK_MSG; this.classList.add('blank'); } });
+        el.addEventListener('blur', function(){ if (!this.value) { this.value = BLANK_MSG; this.classList.add('blank'); updateCreateState(); } });
       });
+      // initialize button state
+      updateCreateState();
     });
     </script>
 </body>

@@ -12,6 +12,7 @@
 </head>
 <body>
     <h1>Welcome to your Ascention</h1>
+    <h2 id="userNickname"></h2>
     <br></br>
 	  <br></br>
     <br></br>
@@ -21,4 +22,13 @@
     </a>
 </body>
 </head>
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      try {
+        const nick = localStorage.getItem('savedNickname');
+        const el = document.getElementById('userNickname');
+        if (el) el.textContent = nick ? `Nickname: ${nick}` : '';
+      } catch (err) {}
+    });
+    </script>
 </html>
