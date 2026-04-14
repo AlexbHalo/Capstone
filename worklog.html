@@ -29,7 +29,8 @@
           if (!sessions || !sessions.length) txt += '(no recorded sessions)\n';
           else {
             sessions.forEach(s => {
-              txt += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}\n`;
+              const completedTag = s.completed ? ' [completed]' : '';
+              txt += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}${completedTag}\n`;
             });
           }
           out.textContent = txt;
@@ -55,7 +56,7 @@
             const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
             let merged = base + '\n\nRecorded Sessions (from browser):\n';
             if (!sessions.length) merged += '(no recorded sessions)\n';
-            else sessions.forEach(s => { merged += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}\n`; });
+            else sessions.forEach(s => { const completedTag = s.completed ? ' [completed]' : ''; merged += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}${completedTag}\n`; });
             const blob = new Blob([merged], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');

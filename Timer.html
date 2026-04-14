@@ -8,17 +8,32 @@
   </head>
   <body>
     <h1>Timer</h1>
+    <h2 id="assignmentDisplay"></h2>
     <div id="mode">Mode: <span id="modeName">Work</span></div>
     <div id="timerDisplay">00:00</div>
     <div>
       <button id="pauseBtn">Pause</button>
+      <button id="completedBtn">Completed</button>
       <a href="Main.html"><button>Back</button></a>
     </div>
+    <!-- Custom confirmation dialog -->
+    <div id="confirmDialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px;border-radius:10px;box-shadow:0 0 30px rgba(0,0,0,0.5);z-index:999;text-align:center;border:2px solid palegoldenrod;">
+      <p style="color:black;font-size:1.2rem;margin:0 0 30px 0;">Are you done with your work?</p>
+      <button id="confirmYes" style="background-color:#4caf50;color:white;margin:0 10px;padding:12px 30px;border:none;border-radius:6px;cursor:pointer;font-size:1.1rem;">Yes</button>
+      <button id="confirmNo" style="background-color:#f44336;color:white;margin:0 10px;padding:12px 30px;border:none;border-radius:6px;cursor:pointer;font-size:1.1rem;">No</button>
+    </div>
+    <div id="dialogOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:998;"></div>
     <script>
     (function(){
       const display = document.getElementById('timerDisplay');
       const modeName = document.getElementById('modeName');
       const pauseBtn = document.getElementById('pauseBtn');
+      const completedBtn = document.getElementById('completedBtn');
+      const assignmentDisplay = document.getElementById('assignmentDisplay');
+
+      // Get and display the current assignment
+      const currentAssignment = localStorage.getItem('currentAssignment') || 'Untitled';
+      assignmentDisplay.textContent = currentAssignment;
 
       let workMinutes = parseInt(localStorage.getItem('workMinutes'),10);
       let breakMinutes = parseInt(localStorage.getItem('breakMinutes'),10);
@@ -84,6 +99,48 @@
       pauseBtn.addEventListener('click', function(){
         paused = !paused;
         pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+      });
+      const confirmDialog = document.getElementById('confirmDialog');
+      const dialogOverlay = document.getElementById('dialogOverlay');
+      const confirmYes = document.getElementById('confirmYes');
+      const confirmNo = document.getElementById('confirmNo');
+
+      completedBtn.addEventListener('click', function(){
+        // show custom dialog
+        confirmDialog.style.display = 'block';
+        dialogOverlay.style.display = 'block';
+      });
+
+      confirmYes.addEventListener('click', function(){
+        // hide dialog
+        confirmDialog.style.display = 'none';
+        dialogOverlay.style.display = 'none';
+        // record the current work session with completed flag
+        try {
+          const assignment = localStorage.getItem('currentAssignment') || 'Untitled';
+          const startMs = parseInt(localStorage.getItem('currentAssignmentStart'),10) || (Date.now() - workMinutes*60*1000);
+          const endMs = Date.now();
+          const minutesWorked = Math.round((endMs - startMs)/60000);
+          const sessionsRaw = localStorage.getItem('workSessions');
+          const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+          sessions.push({ assignment, start: startMs, end: endMs, minutes: minutesWorked, completed: true });
+          localStorage.setItem('workSessions', JSON.stringify(sessions));
+          localStorage.removeItem('currentAssignment');
+          localStorage.removeItem('currentAssignmentStart');
+        } catch (err) {}
+        // navigate to worklog
+        window.location.href = 'worklog.html';
+      });
+
+      confirmNo.addEventListener('click', function(){
+        // hide dialog
+        confirmDialog.style.display = 'none';
+        dialogOverlay.style.display = 'none';
+        // resume timer if paused
+        if (paused) {
+          paused = false;
+          pauseBtn.textContent = 'Pause';
+        }
       });
       // Stop control removed; use Back to return or Pause to pause/resume
 
