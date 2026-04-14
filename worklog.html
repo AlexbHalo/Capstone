@@ -10,16 +10,57 @@
     <h1>Work Log</h1>
     <p>A record of started and completed work by you!</p>
     <a href="Main.html"><button>Back</button></a>
+    <button id="exportBtn">Export Sessions to WORKLOG.md</button>
     <div id="logContainer">
       <pre id="log">Loading...</pre>
     </div>
     <script>
-      // Load the WORKLOG.md file and display as preformatted text
+      // Load the WORKLOG.md file and display as preformatted text,
+      // then append any recorded sessions from localStorage.
       (function(){
-        fetch('WORKLOG.md').then(r => r.text()).then(t => {
-          document.getElementById('log').textContent = t;
+        const out = document.getElementById('log');
+        function fmtDate(ts){
+          const d = new Date(ts);
+          return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+        }
+        function renderCombined(baseText, sessions){
+          let txt = baseText + '\n\n';
+          txt += 'Recorded Sessions (from this browser):\n';
+          if (!sessions || !sessions.length) txt += '(no recorded sessions)\n';
+          else {
+            sessions.forEach(s => {
+              txt += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}\n`;
+            });
+          }
+          out.textContent = txt;
+        }
+
+        fetch('WORKLOG.md').then(r => r.text()).then(base => {
+          try {
+            const sessionsRaw = localStorage.getItem('workSessions');
+            const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+            renderCombined(base, sessions);
+          } catch (err) { renderCombined(base, []); }
         }).catch(() => {
-          document.getElementById('log').textContent = 'Could not load WORKLOG.md';
+          const sessionsRaw = localStorage.getItem('workSessions');
+          const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+          renderCombined('(WORKLOG.md not found)', sessions);
+        });
+
+        // export button: create a merged WORKLOG content and download
+        const exportBtn = document.getElementById('exportBtn');
+        exportBtn.addEventListener('click', function(){
+          fetch('WORKLOG.md').then(r => r.text()).then(base => {
+            const sessionsRaw = localStorage.getItem('workSessions');
+            const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+            let merged = base + '\n\nRecorded Sessions (from browser):\n';
+            if (!sessions.length) merged += '(no recorded sessions)\n';
+            else sessions.forEach(s => { merged += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}\n`; });
+            const blob = new Blob([merged], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'WORKLOG.md'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+          }).catch(() => { alert('Could not load WORKLOG.md to merge.'); });
         });
       })();
     </script>

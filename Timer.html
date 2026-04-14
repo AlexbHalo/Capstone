@@ -49,6 +49,17 @@
           if (remaining <= 0){
             clearInterval(interval); interval = null;
             if (mode === 'work'){
+              // record the completed work session
+              try {
+                const assignment = localStorage.getItem('currentAssignment') || 'Untitled';
+                const startMs = parseInt(localStorage.getItem('currentAssignmentStart'),10) || (Date.now() - workMinutes*60*1000);
+                const endMs = Date.now();
+                const minutes = Math.round((endMs - startMs)/60000);
+                const sessionsRaw = localStorage.getItem('workSessions');
+                const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+                sessions.push({ assignment, start: startMs, end: endMs, minutes });
+                localStorage.setItem('workSessions', JSON.stringify(sessions));
+              } catch (err) {}
               alert('Work period complete — starting break.');
               mode = 'break';
               remaining = breakMinutes * 60;
@@ -56,6 +67,11 @@
               startInterval();
               return;
             } else {
+              // break finished: clear current assignment and return to Main
+              try {
+                localStorage.removeItem('currentAssignment');
+                localStorage.removeItem('currentAssignmentStart');
+              } catch (err) {}
               alert('Break complete — returning to Main.');
               window.location.href = 'Main.html';
               return;
