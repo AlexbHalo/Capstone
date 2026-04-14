@@ -44,7 +44,7 @@
         }).catch(() => {
           const sessionsRaw = localStorage.getItem('workSessions');
           const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
-          renderCombined('(WORKLOG.md not found)', sessions);
+          renderCombined('', sessions);
         });
 
         // export button: create a merged WORKLOG content and download
