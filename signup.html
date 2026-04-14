@@ -75,12 +75,7 @@
     }
 
     function backToLogin(e) {
-      const ok = validateSignup();
-      if (!ok) {
-        updateCreateState();
-        return false;
-      }
-      // navigate to login page
+      // navigate to login page without validating or showing warnings
       window.location.href = 'HTML.html';
       return false;
     }
