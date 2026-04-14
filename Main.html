@@ -14,11 +14,24 @@
     <h1>Welcome to your Ascention</h1>
     <h2 id="userNickname"></h2>
     <br></br>
-	  <br></br>
+      <br></br>
     <br></br>
-	  <br></br>
+      <br></br>
+    <div id="timerSetup">
+      <p>
+        <label>Assignment / Task: <input type="text" id="assignmentName" placeholder="What are you working on?"></label>
+      </p>
+      <p>
+        <label>Work minutes: <input type="number" id="workMinutes" min="1" value="25"></label>
+        <label>Break minutes: <input type="number" id="breakMinutes" min="1" value="5"></label>
+      </p>
+      <button id="beginBtn" disabled>Begin Working</button>
+    </div>
     <a href="HTML.html">
       <button>Back to Log-In</button>
+    </a>
+    <a href="worklog.html">
+      <button>View Work Log</button>
     </a>
 </body>
 </head>
@@ -32,6 +45,46 @@
         const el = document.getElementById('userNickname');
         if (el) el.textContent = nick ? ` ${nick}` : '';
       } catch (err) {}
+
+      // Timer setup controls
+      const assignmentInput = document.getElementById('assignmentName');
+      const workInput = document.getElementById('workMinutes');
+      const breakInput = document.getElementById('breakMinutes');
+      const beginBtn = document.getElementById('beginBtn');
+      function updateBeginState(){
+        const w = workInput && parseInt(workInput.value,10);
+        const b = breakInput && parseInt(breakInput.value,10);
+        // require a non-empty assignment name as well
+        const a = assignmentInput && assignmentInput.value && String(assignmentInput.value).trim().length > 0;
+        beginBtn.disabled = !(w >= 1 && b >= 1 && a);
+      }
+      if (workInput && breakInput && beginBtn){
+        // initialize from saved settings if present
+        const savedW = parseInt(localStorage.getItem('workMinutes'),10);
+        const savedB = parseInt(localStorage.getItem('breakMinutes'),10);
+        if (!isNaN(savedW)) workInput.value = savedW;
+        if (!isNaN(savedB)) breakInput.value = savedB;
+        workInput.addEventListener('input', updateBeginState);
+        breakInput.addEventListener('input', updateBeginState);
+        if (assignmentInput) {
+          // restore previous assignment if present
+          const prevA = localStorage.getItem('currentAssignment');
+          if (prevA) assignmentInput.value = prevA;
+          assignmentInput.addEventListener('input', updateBeginState);
+        }
+        updateBeginState();
+        beginBtn.addEventListener('click', function(){
+          const w = Math.max(1, parseInt(workInput.value,10) || 25);
+          const b = Math.max(1, parseInt(breakInput.value,10) || 5);
+          // save settings and current assignment + start time
+          localStorage.setItem('workMinutes', String(w));
+          localStorage.setItem('breakMinutes', String(b));
+          const assignment = assignmentInput ? String(assignmentInput.value).trim() : '';
+          localStorage.setItem('currentAssignment', assignment);
+          localStorage.setItem('currentAssignmentStart', String(Date.now()));
+          window.location.href = 'Timer.html';
+        });
+      }
     });
     </script>
 </html>

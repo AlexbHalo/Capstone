@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>Timer</h1>
+    <div id="mode">Mode: <span id="modeName">Work</span></div>
+    <div id="timerDisplay">00:00</div>
+    <div>
+      <button id="pauseBtn">Pause</button>
+      <a href="Main.html"><button>Back</button></a>
+    </div>
+    <script>
+    (function(){
+      const display = document.getElementById('timerDisplay');
+      const modeName = document.getElementById('modeName');
+      const pauseBtn = document.getElementById('pauseBtn');
+
+      let workMinutes = parseInt(localStorage.getItem('workMinutes'),10);
+      let breakMinutes = parseInt(localStorage.getItem('breakMinutes'),10);
+      if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
+      if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
+
+      let mode = 'work'; // 'work' or 'break'
+      let remaining = workMinutes * 60;
+      let interval = null;
+      let paused = false;
+
+      function formatTime(s){
+        const m = Math.floor(s/60);
+        const sec = s % 60;
+        return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+      }
+
+      function render(){
+        display.textContent = formatTime(remaining);
+        modeName.textContent = mode === 'work' ? 'Work' : 'Break';
+      }
+
+      function startInterval(){
+        if (interval) return;
+        interval = setInterval(function(){
+          if (paused) return;
+          remaining -= 1;
+          if (remaining <= 0){
+            clearInterval(interval); interval = null;
+            if (mode === 'work'){
+              alert('Work period complete — starting break.');
+              mode = 'break';
+              remaining = breakMinutes * 60;
+              render();
+              startInterval();
+              return;
+            } else {
+              alert('Break complete — returning to Main.');
+              window.location.href = 'Main.html';
+              return;
+            }
+          }
+          render();
+        }, 1000);
+      }
+
+      pauseBtn.addEventListener('click', function(){
+        paused = !paused;
+        pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+      });
+      // Stop control removed; use Back to return or Pause to pause/resume
+
+      // initialize and auto-start
+      render();
+      // start shortly to allow UI render
+      setTimeout(startInterval, 300);
+    })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Log</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>Work Log</h1>
+    <p>A record of started and completed work by you!</p>
+    <a href="Main.html"><button>Back</button></a>
+    <div id="logContainer">
+      <pre id="log">Loading...</pre>
+    </div>
+    <script>
+      // Load the WORKLOG.md file and display as preformatted text
+      (function(){
+        fetch('WORKLOG.md').then(r => r.text()).then(t => {
+          document.getElementById('log').textContent = t;
+        }).catch(() => {
+          document.getElementById('log').textContent = 'Could not load WORKLOG.md';
+        });
+      })();
+    </script>
+  </body>
+</html>

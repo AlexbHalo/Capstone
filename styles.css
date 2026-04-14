@@ -1,6 +1,12 @@
 /* Reset */
 * { box-sizing: border-box; }
 
+:root{
+  --base-font: 20px;
+  --button-padding: 18px 30px;
+  --input-padding: 12px 14px;
+  --container-max: 1200px;
+}
 /* Page layout: center content horizontally and stack vertically */
 body {
   background-color: black;
@@ -9,30 +15,32 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 24px;
+  justify-content: center;
+  padding: 36px;
    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   color: white;
   text-align: center;
+  font-size: var(--base-font);
 }
  
 /* Central content container */
  .container-lg {
   width: 100%;
-  max-width: 900px;
+  max-width: var(--container-max);
    text-align: center;
+  padding: 12px;
  }
 
-h1 { color: white; margin: 0 0 8px; }
-h3 { color: palegoldenrod; margin: 0 0 18px; }
+h1 { color: white; margin: 0 0 12px; font-size: 2.6rem; }
+h3 { color: palegoldenrod; margin: 0 0 20px; font-size: 1.6rem; }
  
 /* Image */
 img {
-   display: block;
-   margin: 18px auto;
-  max-width: 210px;
-  width: 40%;
-   height: auto;
+  display: block;
+  margin: 18px auto;
+  max-width: 420px;
+  width: 45%;
+  height: auto;
 }
 
 /* Buttons */
@@ -40,10 +48,11 @@ button {
   background-color: palegoldenrod;
   border: none;
   cursor: pointer;
-  padding: 12px 22px;
-  margin: 10px 8px;
-  font-size: 1rem;
-  border-radius: 6px;
+  padding: var(--button-padding);
+  margin: 14px 10px;
+  font-size: 1.35rem;
+  border-radius: 10px;
+  min-width: 160px;
 }
 
 /* Login form: hidden/show states */
@@ -51,22 +60,26 @@ button {
 #loginForm.show { display: block; }
 
 #loginForm {
-   margin: 12px auto;
+   margin: 18px auto;
   color: white;
    text-align: center;
  }
  
-#loginForm p { margin: 6px 0; }
-input[type="text"], input[type="password"] { padding: 6px 8px; }
+#loginForm p { margin: 10px 0; font-size: 1.15rem; }
+input[type="text"], input[type="password"], input[type="number"] { padding: var(--input-padding); font-size: 1.1rem; border-radius: 6px; }
+
+/* Timer display larger */
+#timerDisplay { font-size: 4rem; margin: 18px 0; font-weight: 700; }
 
 /* Responsive tweaks */
 @media (min-width: 900px) {
-  img { width: 210px; }
+  img { width: 420px; }
 }
 
-@media (max-width: 420px) {
-  button { width: 100%; max-width: 320px; }
-  img { width: 60%; }
+@media (max-width: 720px) {
+  button { width: 100%; max-width: 380px; font-size: 1.2rem; }
+  img { width: 70%; }
+  :root{ --base-font: 18px; }
 }
 
 /* Enter button visibility (hidden until login click) */
@@ -79,9 +92,7 @@ input[type="text"], input[type="password"] { padding: 6px 8px; }
 #loginError { color: #ff6b6b; margin-top: 8px; font-weight: 600; }
 
 /* Page border: fill the viewport corners */
-html, body { height: 100%; }
-body {
-  border: 6px solid palegoldenrod;
-  border-radius: 0;
-  box-sizing: border-box;
-}
+/* Ensure the document can grow and the border follows its size */
+html, body { height: auto; min-height: 100%; }
+html { border: 12px solid palegoldenrod; }
+body { border-radius: 0; box-sizing: border-box; }
