@@ -10,6 +10,30 @@
     <h1>Work Log</h1>
     <p>A record of started and completed work by you!</p>
     <a href="Main.html"><button>Back</button></a>
+    
+    <div id="filterSection" style="margin: 20px auto; padding: 20px; background-color: #222; border-radius: 8px; max-width: 600px; text-align: left;">
+      <h3 style="margin-top: 0; color: palegoldenrod;">Filter Entries</h3>
+      <p style="margin: 10px 0;">
+        <label style="display: block; margin-bottom: 10px;">
+          Assignment Name:
+          <input type="text" id="filterAssignment" placeholder="Search by task name..." style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+        </label>
+      </p>
+      <p style="margin: 10px 0;">
+        <label style="display: block; margin-bottom: 10px;">
+          Date From:
+          <input type="date" id="filterDateFrom" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+        </label>
+      </p>
+      <p style="margin: 10px 0;">
+        <label style="display: block; margin-bottom: 10px;">
+          Date To:
+          <input type="date" id="filterDateTo" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+        </label>
+      </p>
+      <button id="clearFilters" style="width: 100%; padding: 10px; background-color: #666; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Filters</button>
+    </div>
+    
     <div id="logContainer">
       <pre id="log">Loading...</pre>
     </div>
@@ -18,33 +42,99 @@
       // then append any recorded sessions from localStorage.
       (function(){
         const out = document.getElementById('log');
+        const filterAssignmentInput = document.getElementById('filterAssignment');
+        const filterDateFromInput = document.getElementById('filterDateFrom');
+        const filterDateToInput = document.getElementById('filterDateTo');
+        const clearFiltersBtn = document.getElementById('clearFilters');
+        
+        let baseText = '';
+        let allSessions = [];
+        
         function fmtDate(ts){
           const d = new Date(ts);
           return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
         }
-        function renderCombined(baseText, sessions){
-          let txt = baseText + '\n\n';
+        
+        function getDateOnly(ts){
+          const d = new Date(ts);
+          return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }
+        
+        function filterSessions(sessions){
+          const assignmentFilter = filterAssignmentInput.value.toLowerCase().trim();
+          const dateFromFilter = filterDateFromInput.value; // YYYY-MM-DD
+          const dateToFilter = filterDateToInput.value;     // YYYY-MM-DD
+          
+          return sessions.filter(s => {
+            // Filter by assignment name
+            if (assignmentFilter && !s.assignment.toLowerCase().includes(assignmentFilter)) {
+              return false;
+            }
+            
+            // Filter by date range
+            const sessionDate = getDateOnly(s.start);
+            if (dateFromFilter && sessionDate < dateFromFilter) {
+              return false;
+            }
+            if (dateToFilter && sessionDate > dateToFilter) {
+              return false;
+            }
+            
+            return true;
+          });
+        }
+        
+        function renderCombined(base, sessions){
+          const filteredSessions = filterSessions(sessions);
+          let txt = base;
+          if (base) txt += '\n\n';
           txt += 'Recorded Sessions (from this browser):\n';
-          if (!sessions || !sessions.length) txt += '(no recorded sessions)\n';
-          else {
-            sessions.forEach(s => {
+          if (!filteredSessions || !filteredSessions.length) {
+            txt += '(no recorded sessions matching filters)\n';
+          } else {
+            filteredSessions.forEach(s => {
               const completedTag = s.completed ? ' [completed]' : '';
               txt += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}${completedTag}\n`;
             });
           }
           out.textContent = txt;
         }
+        
+        function rerender(){
+          renderCombined(baseText, allSessions);
+        }
 
         fetch('WORKLOG.md').then(r => r.text()).then(base => {
+          baseText = base;
           try {
             const sessionsRaw = localStorage.getItem('workSessions');
-            const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
-            renderCombined(base, sessions);
-          } catch (err) { renderCombined(base, []); }
+            allSessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+            rerender();
+          } catch (err) { 
+            allSessions = [];
+            rerender();
+          }
         }).catch(() => {
-          const sessionsRaw = localStorage.getItem('workSessions');
-          const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
-          renderCombined('', sessions);
+          baseText = '';
+          try {
+            const sessionsRaw = localStorage.getItem('workSessions');
+            allSessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+          } catch (err) {
+            allSessions = [];
+          }
+          rerender();
+        });
+        
+        // Add event listeners to filter inputs
+        filterAssignmentInput.addEventListener('input', rerender);
+        filterDateFromInput.addEventListener('change', rerender);
+        filterDateToInput.addEventListener('change', rerender);
+        
+        clearFiltersBtn.addEventListener('click', function(){
+          filterAssignmentInput.value = '';
+          filterDateFromInput.value = '';
+          filterDateToInput.value = '';
+          rerender();
         });
       })();
     </script>
