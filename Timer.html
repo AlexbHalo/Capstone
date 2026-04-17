@@ -16,6 +16,9 @@
       <button id="completedBtn">Completed</button>
       <a href="Main.html"><button>Back</button></a>
     </div>
+    <div id="progressBarContainer">
+      <div id="progressBarFill"></div>
+    </div>
     <!-- Custom confirmation dialog -->
     <div id="confirmDialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px;border-radius:10px;box-shadow:0 0 30px rgba(0,0,0,0.5);z-index:999;text-align:center;border:2px solid palegoldenrod;">
       <p style="color:black;font-size:1.2rem;margin:0 0 30px 0;">Are you done with your work?</p>
@@ -30,6 +33,7 @@
       const pauseBtn = document.getElementById('pauseBtn');
       const completedBtn = document.getElementById('completedBtn');
       const assignmentDisplay = document.getElementById('assignmentDisplay');
+      const progressBarFill = document.getElementById('progressBarFill');
 
       // Get and display the current assignment
       const currentAssignment = localStorage.getItem('currentAssignment') || 'Untitled';
@@ -42,6 +46,7 @@
 
       let mode = 'work'; // 'work' or 'break'
       let remaining = workMinutes * 60;
+      let totalTime = workMinutes * 60; // track total time for progress calculation
       let interval = null;
       let paused = false;
 
@@ -54,6 +59,9 @@
       function render(){
         display.textContent = formatTime(remaining);
         modeName.textContent = mode === 'work' ? 'Work' : 'Break';
+        // Update progress bar
+        const progress = Math.max(0, (totalTime - remaining) / totalTime);
+        progressBarFill.style.width = (progress * 100) + '%';
       }
 
       function startInterval(){
@@ -78,6 +86,7 @@
               alert('Work period complete — starting break.');
               mode = 'break';
               remaining = breakMinutes * 60;
+              totalTime = breakMinutes * 60; // reset totalTime for break
               render();
               startInterval();
               return;

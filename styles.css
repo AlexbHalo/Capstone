@@ -71,6 +71,25 @@ input[type="text"], input[type="password"], input[type="number"] { padding: var(
 /* Timer display larger */
 #timerDisplay { font-size: 4rem; margin: 18px 0; font-weight: 700; }
 
+/* Progress bar styling */
+#progressBarContainer {
+  width: 100%;
+  max-width: 500px;
+  height: 30px;
+  background-color: black;
+  border: 3px solid white;
+  margin: 20px auto;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#progressBarFill {
+  height: 100%;
+  background-color: palegoldenrod;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
 /* Responsive tweaks */
 @media (min-width: 900px) {
   img { width: 420px; }
