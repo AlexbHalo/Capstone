@@ -10,7 +10,6 @@
     <h1>Work Log</h1>
     <p>A record of started and completed work by you!</p>
     <a href="Main.html"><button>Back</button></a>
-    <button id="exportBtn">Export Sessions to WORKLOG.md</button>
     <div id="logContainer">
       <pre id="log">Loading...</pre>
     </div>
@@ -46,22 +45,6 @@
           const sessionsRaw = localStorage.getItem('workSessions');
           const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
           renderCombined('', sessions);
-        });
-
-        // export button: create a merged WORKLOG content and download
-        const exportBtn = document.getElementById('exportBtn');
-        exportBtn.addEventListener('click', function(){
-          fetch('WORKLOG.md').then(r => r.text()).then(base => {
-            const sessionsRaw = localStorage.getItem('workSessions');
-            const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
-            let merged = base + '\n\nRecorded Sessions (from browser):\n';
-            if (!sessions.length) merged += '(no recorded sessions)\n';
-            else sessions.forEach(s => { const completedTag = s.completed ? ' [completed]' : ''; merged += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}${completedTag}\n`; });
-            const blob = new Blob([merged], { type: 'text/markdown' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'WORKLOG.md'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-          }).catch(() => { alert('Could not load WORKLOG.md to merge.'); });
         });
       })();
     </script>

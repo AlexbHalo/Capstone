@@ -70,6 +70,22 @@
           // restore previous assignment if present
           const prevA = localStorage.getItem('currentAssignment');
           if (prevA) assignmentInput.value = prevA;
+          
+          // Load the most recent incomplete task from workSessions as default
+          try {
+            const sessionsRaw = localStorage.getItem('workSessions');
+            const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+            if (sessions.length > 0) {
+              // Find the most recent incomplete task (completed !== true)
+              for (let i = sessions.length - 1; i >= 0; i--) {
+                if (!sessions[i].completed) {
+                  assignmentInput.value = sessions[i].assignment;
+                  break;
+                }
+              }
+            }
+          } catch (err) {}
+          
           assignmentInput.addEventListener('input', updateBeginState);
         }
         updateBeginState();
