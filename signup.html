@@ -12,9 +12,8 @@
 </head>
 <body>
     <script>
-      // Apply saved theme
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
+      // Always use dark theme on signup page
+      document.documentElement.setAttribute('data-theme', 'dark');
     </script>
     <h1>Create An Account</h1>
     <div id="signupForm" class="show">
@@ -28,9 +27,6 @@
 	  <br></br>
     <button id="createBtn" disabled onclick="return createAccount(event)">Create</button>
     <button id="backLink" onclick="return backToLogin(event)">Back to Log-In</button>
-    <a href="worklog.html">
-      <button>View Work Log</button>
-    </a>
     <script>
     const BLANK_MSG = 'Can Not Be Left Blank';
     function updateCreateState() {
