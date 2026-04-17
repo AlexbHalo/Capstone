@@ -11,6 +11,12 @@
     <p>A record of started and completed work by you!</p>
     <a href="Main.html"><button>Back</button></a>
     
+    <script>
+      // Apply saved theme
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+    
     <div id="filterSection" style="margin: 20px auto; padding: 20px; background-color: #222; border-radius: 8px; max-width: 600px; text-align: left;">
       <h3 style="margin-top: 0; color: palegoldenrod;">Filter Entries</h3>
       <p style="margin: 10px 0;">

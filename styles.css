@@ -6,33 +6,50 @@
   --button-padding: 18px 30px;
   --input-padding: 12px 14px;
   --container-max: 1200px;
+  
+  /* Dark mode (default) */
+  --bg-primary: black;
+  --text-primary: white;
+  --accent-color: palegoldenrod;
+  --bg-secondary: #222;
+  --border-color: palegoldenrod;
 }
+
+html[data-theme="light"] {
+  --bg-primary: white;
+  --text-primary: black;
+  --accent-color: RebeccaPurple;
+  --bg-secondary: #f5f5f5;
+  --border-color: RebeccaPurple;
+}
+
 /* Page layout: center content horizontally and stack vertically */
 body {
-  background-color: black;
-   margin: 0;
+  background-color: var(--bg-primary);
+  margin: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 36px;
-   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  color: white;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: var(--text-primary);
   text-align: center;
   font-size: var(--base-font);
+  transition: background-color 0.3s, color 0.3s;
 }
  
 /* Central content container */
- .container-lg {
+.container-lg {
   width: 100%;
   max-width: var(--container-max);
-   text-align: center;
+  text-align: center;
   padding: 12px;
  }
 
-h1 { color: white; margin: 0 0 12px; font-size: 2.6rem; }
-h3 { color: palegoldenrod; margin: 0 0 20px; font-size: 1.6rem; }
+h1 { color: var(--text-primary); margin: 0 0 12px; font-size: 2.6rem; }
+h3 { color: var(--accent-color); margin: 0 0 20px; font-size: 1.6rem; }
  
 /* Image */
 img {
@@ -45,7 +62,8 @@ img {
 
 /* Buttons */
 button {
-  background-color: palegoldenrod;
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
   border: none;
   cursor: pointer;
   padding: var(--button-padding);
@@ -53,6 +71,7 @@ button {
   font-size: 1.35rem;
   border-radius: 10px;
   min-width: 160px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* Login form: hidden/show states */
@@ -60,13 +79,21 @@ button {
 #loginForm.show { display: block; }
 
 #loginForm {
-   margin: 18px auto;
-  color: white;
-   text-align: center;
- }
- 
+  margin: 18px auto;
+  color: var(--text-primary);
+  text-align: center;
+}
+
 #loginForm p { margin: 10px 0; font-size: 1.15rem; }
-input[type="text"], input[type="password"], input[type="number"] { padding: var(--input-padding); font-size: 1.1rem; border-radius: 6px; }
+input[type="text"], input[type="password"], input[type="number"] { 
+  padding: var(--input-padding); 
+  font-size: 1.1rem; 
+  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
 
 /* Timer display larger */
 #timerDisplay { font-size: 4rem; margin: 18px 0; font-weight: 700; }
@@ -76,18 +103,19 @@ input[type="text"], input[type="password"], input[type="number"] { padding: var(
   width: 100%;
   max-width: 500px;
   height: 30px;
-  background-color: black;
-  border: 3px solid white;
+  background-color: var(--bg-primary);
+  border: 3px solid var(--text-primary);
   margin: 20px auto;
   border-radius: 8px;
   overflow: hidden;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 #progressBarFill {
   height: 100%;
-  background-color: palegoldenrod;
+  background-color: var(--accent-color);
   width: 0%;
-  transition: width 0.1s linear;
+  transition: width 0.1s linear, background-color 0.3s;
 }
 
 /* Responsive tweaks */
@@ -113,5 +141,34 @@ input[type="text"], input[type="password"], input[type="number"] { padding: var(
 /* Page border: fill the viewport corners */
 /* Ensure the document can grow and the border follows its size */
 html, body { height: auto; min-height: 100%; }
-html { border: 12px solid palegoldenrod; }
+html { border: 12px solid var(--accent-color); transition: border-color 0.3s; }
 body { border-radius: 0; box-sizing: border-box; }
+
+/* Filter section styling for light mode */
+#filterSection {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+#filterSection h3 {
+  color: var(--accent-color) !important;
+}
+
+#filterSection label {
+  color: var(--text-primary) !important;
+}
+
+#filterSection input {
+  border-color: var(--border-color) !important;
+}
+
+#filterSection button {
+  color: var(--text-primary) !important;
+  background-color: #666 !important;
+  transition: background-color 0.3s;
+}
+
+html[data-theme="light"] #filterSection button {
+  background-color: #999 !important;
+}

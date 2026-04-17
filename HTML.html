@@ -34,6 +34,11 @@
 
   </head>
   <body>
+    <script>
+      // Apply saved theme
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
     <div class="container-lg px-3 my-5 markdown-body">
       
 

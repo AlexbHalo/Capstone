@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <script>
+      // Apply saved theme
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
     <h1>Create An Account</h1>
     <div id="signupForm" class="show">
       <p>Username: <input type="text" id="signupUsername"></p>
