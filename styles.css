@@ -74,6 +74,18 @@ button {
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* Theme toggle button */
+#themeToggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  margin: 0;
+  min-width: auto;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 /* Login form: hidden/show states */
 #loginForm.hidden { display: none; }
 #loginForm.show { display: block; }
