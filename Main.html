@@ -19,9 +19,13 @@
     <br></br>
       <br></br>
     <div id="timerSetup">
-      <p>
-        <label>Assignment / Task: <input type="text" id="assignmentName" list="assignmentHistory" placeholder="What are you working on?"></label>
-        <datalist id="assignmentHistory"></datalist>
+      <p class="assignment-row">
+        <label>Assignment / Task: <input type="text" id="assignmentName" placeholder="What are you working on?"></label>
+        <label>Unfinished task:
+          <select id="assignmentHistory">
+            <option value="">Choose unfinished task</option>
+          </select>
+        </label>
       </p>
       <p>
         <label>Work minutes: <input type="number" id="workMinutes" min="1" value="25"></label>
@@ -105,15 +109,29 @@
               }
             }
             if (assignmentHistory) {
-              assignmentHistory.innerHTML = incompleteAssignments
-                .map(name => `<option value="${name}"></option>`)
+              assignmentHistory.innerHTML = '<option value="">Choose unfinished task</option>' + incompleteAssignments
+                .map(name => `<option value="${name}">${name}</option>`)
                 .join('');
+              if (!assignmentInput.value && incompleteAssignments.length > 0) {
+                assignmentInput.value = incompleteAssignments[0];
+              }
+              if (assignmentInput.value) {
+                assignmentHistory.value = assignmentInput.value;
+              }
             }
             if (!assignmentInput.value && incompleteAssignments.length > 0) {
               assignmentInput.value = incompleteAssignments[0];
             }
           } catch (err) {}
           
+          if (assignmentHistory) {
+            assignmentHistory.addEventListener('change', function(){
+              if (assignmentHistory.value) {
+                assignmentInput.value = assignmentHistory.value;
+                updateBeginState();
+              }
+            });
+          }
           assignmentInput.addEventListener('input', updateBeginState);
         }
         updateBeginState();

@@ -99,7 +99,7 @@ button {
 }
 
 #loginForm p { margin: 10px 0; font-size: 1.15rem; }
-input[type="text"], input[type="password"], input[type="number"] { 
+input[type="text"], input[type="password"], input[type="number"], select { 
   padding: var(--input-padding); 
   font-size: 1.1rem; 
   border-radius: 6px;
@@ -109,10 +109,31 @@ input[type="text"], input[type="password"], input[type="number"] {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
+select {
+  width: 100%;
+  max-width: 540px;
+}
+
 #timerSetup label {
   display: block;
   text-align: left;
   margin-bottom: 16px;
+}
+
+#timerSetup .assignment-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+#timerSetup .assignment-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
 }
 
 #assignmentName {
