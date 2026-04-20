@@ -14,6 +14,7 @@
     <h1>Welcome to your Ascention</h1>
     <h2 id="userNickname"></h2>
     <button id="themeToggle">Light Mode</button>
+    <button id="customModeBtn">Custom Mode</button>
     <br></br>
       <br></br>
     <br></br>
@@ -21,11 +22,6 @@
     <div id="timerSetup">
       <p class="assignment-row">
         <label>Assignment / Task: <input type="text" id="assignmentName" placeholder="What are you working on?"></label>
-        <label>Unfinished task:
-          <select id="assignmentHistory">
-            <option value="">Choose unfinished task</option>
-          </select>
-        </label>
       </p>
       <p>
         <label>Work minutes: <input type="number" id="workMinutes" min="1" value="25"></label>
@@ -39,6 +35,21 @@
     <a href="worklog.html">
       <button>View Work Log</button>
     </a>
+
+    <div id="customModeDialog">
+      <h3>Custom Mode Colors</h3>
+      <div class="color-picker-row">
+        <label>Base<input type="color" id="customBaseColor"></label>
+        <label>Primary<input type="color" id="customPrimaryColor"></label>
+        <label>Sub<input type="color" id="customSubColor"></label>
+      </div>
+      <div class="modal-actions">
+        <button id="saveCustomMode">Save</button>
+        <button id="resetCustomMode">Reset</button>
+        <button id="cancelCustomMode">Cancel</button>
+      </div>
+    </div>
+    <div id="customModeOverlay"></div>
 </body>
 </head>
     <script>
@@ -54,17 +65,94 @@
 
       // Theme toggle setup
       const themeToggle = document.getElementById('themeToggle');
+      const customModeBtn = document.getElementById('customModeBtn');
+      const customModeDialog = document.getElementById('customModeDialog');
+      const customModeOverlay = document.getElementById('customModeOverlay');
+      const customBaseColor = document.getElementById('customBaseColor');
+      const customPrimaryColor = document.getElementById('customPrimaryColor');
+      const customSubColor = document.getElementById('customSubColor');
+      const saveCustomModeBtn = document.getElementById('saveCustomMode');
+      const cancelCustomModeBtn = document.getElementById('cancelCustomMode');
+      const resetCustomModeBtn = document.getElementById('resetCustomMode');
+
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
       themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-      
-      themeToggle.addEventListener('click', function(){
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-      });
+
+      let customColors = null;
+      function toHex(color) {
+        const ctx = document.createElement('canvas').getContext('2d');
+        ctx.fillStyle = color;
+        return ctx.fillStyle;
+      }
+      function applyCustomColors(colors) {
+        if (!colors) return;
+        document.documentElement.style.setProperty('--bg-primary', colors.base);
+        document.documentElement.style.setProperty('--accent-color', colors.primary);
+        document.documentElement.style.setProperty('--bg-secondary', colors.sub);
+      }
+      function loadCustomColors() {
+        try {
+          const stored = localStorage.getItem('customColors');
+          if (stored) {
+            customColors = JSON.parse(stored);
+            applyCustomColors(customColors);
+          }
+        } catch (err) {}
+      }
+      function closeCustomModeDialog() {
+        if (customModeDialog) customModeDialog.style.display = 'none';
+        if (customModeOverlay) customModeOverlay.style.display = 'none';
+      }
+      function openCustomModeDialog() {
+        const styles = getComputedStyle(document.documentElement);
+        const current = customColors || {
+          base: toHex(styles.getPropertyValue('--bg-primary').trim()),
+          primary: toHex(styles.getPropertyValue('--accent-color').trim()),
+          sub: toHex(styles.getPropertyValue('--bg-secondary').trim())
+        };
+        customBaseColor.value = current.base;
+        customPrimaryColor.value = current.primary;
+        customSubColor.value = current.sub;
+        if (customModeDialog) customModeDialog.style.display = 'block';
+        if (customModeOverlay) customModeOverlay.style.display = 'block';
+      }
+      function resetCustomMode() {
+        localStorage.removeItem('customColors');
+        customColors = null;
+        document.documentElement.style.removeProperty('--bg-primary');
+        document.documentElement.style.removeProperty('--accent-color');
+        document.documentElement.style.removeProperty('--bg-secondary');
+        closeCustomModeDialog();
+      }
+      function saveCustomMode() {
+        customColors = {
+          base: customBaseColor.value,
+          primary: customPrimaryColor.value,
+          sub: customSubColor.value
+        };
+        localStorage.setItem('customColors', JSON.stringify(customColors));
+        applyCustomColors(customColors);
+        closeCustomModeDialog();
+      }
+
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function(){
+          const currentTheme = document.documentElement.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+          themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+          if (customColors) applyCustomColors(customColors);
+        });
+      }
+      if (customModeBtn) customModeBtn.addEventListener('click', openCustomModeDialog);
+      if (saveCustomModeBtn) saveCustomModeBtn.addEventListener('click', saveCustomMode);
+      if (cancelCustomModeBtn) cancelCustomModeBtn.addEventListener('click', closeCustomModeDialog);
+      if (resetCustomModeBtn) resetCustomModeBtn.addEventListener('click', resetCustomMode);
+      if (customModeOverlay) customModeOverlay.addEventListener('click', closeCustomModeDialog);
+
+      loadCustomColors();
 
       // Timer setup controls
       const assignmentInput = document.getElementById('assignmentName');

@@ -9,6 +9,7 @@
   <body>
     <h1>Timer</h1>
     <button id="themeToggle">Light Mode</button>
+    <button id="customModeBtn">Custom Mode</button>
     <h2 id="assignmentDisplay"></h2>
     <div id="mode">Mode: <span id="modeName">Work</span></div>
     <div id="timerDisplay">00:00</div>
@@ -21,6 +22,20 @@
       <div id="progressBarFill"></div>
     </div>
     <button id="loopToggle">loop mode: on</button>
+    <div id="customModeDialog">
+      <h3>Custom Mode Colors</h3>
+      <div class="color-picker-row">
+        <label>Base<input type="color" id="customBaseColor"></label>
+        <label>Primary<input type="color" id="customPrimaryColor"></label>
+        <label>Sub<input type="color" id="customSubColor"></label>
+      </div>
+      <div class="modal-actions">
+        <button id="saveCustomMode">Save</button>
+        <button id="resetCustomMode">Reset</button>
+        <button id="cancelCustomMode">Cancel</button>
+      </div>
+    </div>
+    <div id="customModeOverlay"></div>
     <!-- Custom confirmation dialog -->
     <div id="confirmDialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px;border-radius:10px;box-shadow:0 0 30px rgba(0,0,0,0.5);z-index:999;text-align:center;border:2px solid palegoldenrod;">
       <p style="color:black;font-size:1.2rem;margin:0 0 30px 0;">Are you done with your work?</p>
@@ -29,21 +44,94 @@
     </div>
     <div id="dialogOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:998;"></div>
     <script>
-    // Apply saved theme
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    
     // Theme toggle setup
     const themeToggle = document.getElementById('themeToggle');
+    const customModeBtn = document.getElementById('customModeBtn');
+    const customModeDialog = document.getElementById('customModeDialog');
+    const customModeOverlay = document.getElementById('customModeOverlay');
+    const customBaseColor = document.getElementById('customBaseColor');
+    const customPrimaryColor = document.getElementById('customPrimaryColor');
+    const customSubColor = document.getElementById('customSubColor');
+    const saveCustomModeBtn = document.getElementById('saveCustomMode');
+    const cancelCustomModeBtn = document.getElementById('cancelCustomMode');
+    const resetCustomModeBtn = document.getElementById('resetCustomMode');
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-    
+
+    let customColors = null;
+    function toHex(color) {
+      const ctx = document.createElement('canvas').getContext('2d');
+      ctx.fillStyle = color;
+      return ctx.fillStyle;
+    }
+    function applyCustomColors(colors) {
+      if (!colors) return;
+      document.documentElement.style.setProperty('--bg-primary', colors.base);
+      document.documentElement.style.setProperty('--accent-color', colors.primary);
+      document.documentElement.style.setProperty('--bg-secondary', colors.sub);
+    }
+    function loadCustomColors() {
+      try {
+        const stored = localStorage.getItem('customColors');
+        if (stored) {
+          customColors = JSON.parse(stored);
+          applyCustomColors(customColors);
+        }
+      } catch (err) {}
+    }
+    function closeCustomModeDialog() {
+      if (customModeDialog) customModeDialog.style.display = 'none';
+      if (customModeOverlay) customModeOverlay.style.display = 'none';
+    }
+    function openCustomModeDialog() {
+      const styles = getComputedStyle(document.documentElement);
+      const current = customColors || {
+        base: toHex(styles.getPropertyValue('--bg-primary').trim()),
+        primary: toHex(styles.getPropertyValue('--accent-color').trim()),
+        sub: toHex(styles.getPropertyValue('--bg-secondary').trim())
+      };
+      customBaseColor.value = current.base;
+      customPrimaryColor.value = current.primary;
+      customSubColor.value = current.sub;
+      if (customModeDialog) customModeDialog.style.display = 'block';
+      if (customModeOverlay) customModeOverlay.style.display = 'block';
+    }
+    function resetCustomMode() {
+      localStorage.removeItem('customColors');
+      customColors = null;
+      document.documentElement.style.removeProperty('--bg-primary');
+      document.documentElement.style.removeProperty('--accent-color');
+      document.documentElement.style.removeProperty('--bg-secondary');
+      closeCustomModeDialog();
+    }
+    function saveCustomMode() {
+      customColors = {
+        base: customBaseColor.value,
+        primary: customPrimaryColor.value,
+        sub: customSubColor.value
+      };
+      localStorage.setItem('customColors', JSON.stringify(customColors));
+      applyCustomColors(customColors);
+      closeCustomModeDialog();
+    }
+
+    themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
     themeToggle.addEventListener('click', function(){
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
       themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+      if (customColors) applyCustomColors(customColors);
     });
+    if (customModeBtn) customModeBtn.addEventListener('click', openCustomModeDialog);
+    if (saveCustomModeBtn) saveCustomModeBtn.addEventListener('click', saveCustomMode);
+    if (cancelCustomModeBtn) cancelCustomModeBtn.addEventListener('click', closeCustomModeDialog);
+    if (resetCustomModeBtn) resetCustomModeBtn.addEventListener('click', resetCustomMode);
+    if (customModeOverlay) customModeOverlay.addEventListener('click', closeCustomModeDialog);
+    loadCustomColors();
     
     (function(){
       const display = document.getElementById('timerDisplay');

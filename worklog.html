@@ -9,8 +9,24 @@
   <body>
     <h1>Work Log</h1>
     <button id="themeToggle">Light Mode</button>
+    <button id="customModeBtn">Custom Mode</button>
     <p>A record of started and completed work by you!</p>
     <a href="Main.html"><button>Back</button></a>
+
+    <div id="customModeDialog">
+      <h3>Custom Mode Colors</h3>
+      <div class="color-picker-row">
+        <label>Base<input type="color" id="customBaseColor"></label>
+        <label>Primary<input type="color" id="customPrimaryColor"></label>
+        <label>Sub<input type="color" id="customSubColor"></label>
+      </div>
+      <div class="modal-actions">
+        <button id="saveCustomMode">Save</button>
+        <button id="resetCustomMode">Reset</button>
+        <button id="cancelCustomMode">Cancel</button>
+      </div>
+    </div>
+    <div id="customModeOverlay"></div>
     
     <script>
       // Apply saved theme
@@ -19,15 +35,89 @@
       
       // Theme toggle setup
       const themeToggle = document.getElementById('themeToggle');
+      const customModeBtn = document.getElementById('customModeBtn');
+      const customModeDialog = document.getElementById('customModeDialog');
+      const customModeOverlay = document.getElementById('customModeOverlay');
+      const customBaseColor = document.getElementById('customBaseColor');
+      const customPrimaryColor = document.getElementById('customPrimaryColor');
+      const customSubColor = document.getElementById('customSubColor');
+      const saveCustomModeBtn = document.getElementById('saveCustomMode');
+      const cancelCustomModeBtn = document.getElementById('cancelCustomMode');
+      const resetCustomModeBtn = document.getElementById('resetCustomMode');
+
       themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-      
+
+      let customColors = null;
+      function toHex(color) {
+        const ctx = document.createElement('canvas').getContext('2d');
+        ctx.fillStyle = color;
+        return ctx.fillStyle;
+      }
+      function applyCustomColors(colors) {
+        if (!colors) return;
+        document.documentElement.style.setProperty('--bg-primary', colors.base);
+        document.documentElement.style.setProperty('--accent-color', colors.primary);
+        document.documentElement.style.setProperty('--bg-secondary', colors.sub);
+      }
+      function loadCustomColors() {
+        try {
+          const stored = localStorage.getItem('customColors');
+          if (stored) {
+            customColors = JSON.parse(stored);
+            applyCustomColors(customColors);
+          }
+        } catch (err) {}
+      }
+      function closeCustomModeDialog() {
+        if (customModeDialog) customModeDialog.style.display = 'none';
+        if (customModeOverlay) customModeOverlay.style.display = 'none';
+      }
+      function openCustomModeDialog() {
+        const styles = getComputedStyle(document.documentElement);
+        const current = customColors || {
+          base: toHex(styles.getPropertyValue('--bg-primary').trim()),
+          primary: toHex(styles.getPropertyValue('--accent-color').trim()),
+          sub: toHex(styles.getPropertyValue('--bg-secondary').trim())
+        };
+        customBaseColor.value = current.base;
+        customPrimaryColor.value = current.primary;
+        customSubColor.value = current.sub;
+        if (customModeDialog) customModeDialog.style.display = 'block';
+        if (customModeOverlay) customModeOverlay.style.display = 'block';
+      }
+      function resetCustomMode() {
+        localStorage.removeItem('customColors');
+        customColors = null;
+        document.documentElement.style.removeProperty('--bg-primary');
+        document.documentElement.style.removeProperty('--accent-color');
+        document.documentElement.style.removeProperty('--bg-secondary');
+        closeCustomModeDialog();
+      }
+      function saveCustomMode() {
+        customColors = {
+          base: customBaseColor.value,
+          primary: customPrimaryColor.value,
+          sub: customSubColor.value
+        };
+        localStorage.setItem('customColors', JSON.stringify(customColors));
+        applyCustomColors(customColors);
+        closeCustomModeDialog();
+      }
+
       themeToggle.addEventListener('click', function(){
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+        if (customColors) applyCustomColors(customColors);
       });
+      if (customModeBtn) customModeBtn.addEventListener('click', openCustomModeDialog);
+      if (saveCustomModeBtn) saveCustomModeBtn.addEventListener('click', saveCustomMode);
+      if (cancelCustomModeBtn) cancelCustomModeBtn.addEventListener('click', closeCustomModeDialog);
+      if (resetCustomModeBtn) resetCustomModeBtn.addEventListener('click', resetCustomMode);
+      if (customModeOverlay) customModeOverlay.addEventListener('click', closeCustomModeDialog);
+      loadCustomColors();
     </script>
     
     <div id="filterSection" style="margin: 20px auto; padding: 20px; background-color: #222; border-radius: 8px; max-width: 600px; text-align: left;">
@@ -52,7 +142,7 @@
       </p>
       <button id="clearFilters" style="width: 100%; padding: 10px; background-color: #666; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Filters</button>
     </div>
-    
+
     <div id="logContainer">
       <pre id="log">Loading...</pre>
     </div>
