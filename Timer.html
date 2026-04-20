@@ -20,6 +20,7 @@
     <div id="progressBarContainer">
       <div id="progressBarFill"></div>
     </div>
+    <button id="loopToggle">loop mode: on</button>
     <!-- Custom confirmation dialog -->
     <div id="confirmDialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px;border-radius:10px;box-shadow:0 0 30px rgba(0,0,0,0.5);z-index:999;text-align:center;border:2px solid palegoldenrod;">
       <p style="color:black;font-size:1.2rem;margin:0 0 30px 0;">Are you done with your work?</p>
@@ -51,10 +52,24 @@
       const completedBtn = document.getElementById('completedBtn');
       const assignmentDisplay = document.getElementById('assignmentDisplay');
       const progressBarFill = document.getElementById('progressBarFill');
+      const loopToggle = document.getElementById('loopToggle');
+
+      let loopMode = true;
+      function updateLoopToggleText(){
+        if (loopToggle) {
+          loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
+        }
+      }
 
       // Get and display the current assignment
       const currentAssignment = localStorage.getItem('currentAssignment') || 'Untitled';
       assignmentDisplay.textContent = currentAssignment;
+
+      const savedLoopMode = localStorage.getItem('loopMode');
+      if (savedLoopMode !== null) {
+        loopMode = savedLoopMode === 'true';
+      }
+      updateLoopToggleText();
 
       let workMinutes = parseInt(localStorage.getItem('workMinutes'),10);
       let breakMinutes = parseInt(localStorage.getItem('breakMinutes'),10);
@@ -108,7 +123,18 @@
               startInterval();
               return;
             } else {
-              // break finished: clear current assignment and return to Main
+              // break finished: either loop or return to Main
+              if (loopMode) {
+                try {
+                  localStorage.setItem('currentAssignmentStart', String(Date.now()));
+                } catch (err) {}
+                mode = 'work';
+                remaining = workMinutes * 60;
+                totalTime = workMinutes * 60;
+                render();
+                startInterval();
+                return;
+              }
               try {
                 localStorage.removeItem('currentAssignment');
                 localStorage.removeItem('currentAssignmentStart');
@@ -126,6 +152,14 @@
         paused = !paused;
         pauseBtn.textContent = paused ? 'Resume' : 'Pause';
       });
+
+      if (loopToggle) {
+        loopToggle.addEventListener('click', function(){
+          loopMode = !loopMode;
+          localStorage.setItem('loopMode', String(loopMode));
+          updateLoopToggleText();
+        });
+      }
       const confirmDialog = document.getElementById('confirmDialog');
       const dialogOverlay = document.getElementById('dialogOverlay');
       const confirmYes = document.getElementById('confirmYes');

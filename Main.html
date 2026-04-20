@@ -20,7 +20,8 @@
       <br></br>
     <div id="timerSetup">
       <p>
-        <label>Assignment / Task: <input type="text" id="assignmentName" placeholder="What are you working on?"></label>
+        <label>Assignment / Task: <input type="text" id="assignmentName" list="assignmentHistory" placeholder="What are you working on?"></label>
+        <datalist id="assignmentHistory"></datalist>
       </p>
       <p>
         <label>Work minutes: <input type="number" id="workMinutes" min="1" value="25"></label>
@@ -63,6 +64,7 @@
 
       // Timer setup controls
       const assignmentInput = document.getElementById('assignmentName');
+      const assignmentHistory = document.getElementById('assignmentHistory');
       const workInput = document.getElementById('workMinutes');
       const breakInput = document.getElementById('breakMinutes');
       const beginBtn = document.getElementById('beginBtn');
@@ -86,18 +88,29 @@
           const prevA = localStorage.getItem('currentAssignment');
           if (prevA) assignmentInput.value = prevA;
           
-          // Load the most recent incomplete task from workSessions as default
+          // Populate the dropdown with uncompleted task names
           try {
             const sessionsRaw = localStorage.getItem('workSessions');
             const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+            const incompleteAssignments = [];
             if (sessions.length > 0) {
-              // Find the most recent incomplete task (completed !== true)
-              for (let i = sessions.length - 1; i >= 0; i--) {
-                if (!sessions[i].completed) {
-                  assignmentInput.value = sessions[i].assignment;
-                  break;
+              // Find incomplete tasks from oldest to newest and add unique assignments
+              for (let i = 0; i < sessions.length; i++) {
+                if (!sessions[i].completed && sessions[i].assignment) {
+                  const assignmentName = String(sessions[i].assignment).trim();
+                  if (assignmentName && !incompleteAssignments.includes(assignmentName)) {
+                    incompleteAssignments.push(assignmentName);
+                  }
                 }
               }
+            }
+            if (assignmentHistory) {
+              assignmentHistory.innerHTML = incompleteAssignments
+                .map(name => `<option value="${name}"></option>`)
+                .join('');
+            }
+            if (!assignmentInput.value && incompleteAssignments.length > 0) {
+              assignmentInput.value = incompleteAssignments[0];
             }
           } catch (err) {}
           

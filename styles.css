@@ -13,6 +13,7 @@
   --accent-color: palegoldenrod;
   --bg-secondary: #222;
   --border-color: palegoldenrod;
+  --completed-color: palegoldenrod;
 }
 
 html[data-theme="light"] {
@@ -21,6 +22,7 @@ html[data-theme="light"] {
   --accent-color: RebeccaPurple;
   --bg-secondary: #f5f5f5;
   --border-color: RebeccaPurple;
+  --completed-color: RebeccaPurple;
 }
 
 /* Page layout: center content horizontally and stack vertically */
@@ -107,6 +109,22 @@ input[type="text"], input[type="password"], input[type="number"] {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
+#timerSetup label {
+  display: block;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+#assignmentName {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+}
+
+#assignmentHistory {
+  display: none;
+}
+
 /* Timer display larger */
 #timerDisplay { font-size: 4rem; margin: 18px 0; font-weight: 700; }
 
@@ -183,4 +201,9 @@ body { border-radius: 0; box-sizing: border-box; }
 
 html[data-theme="light"] #filterSection button {
   background-color: #999 !important;
+}
+
+#log .completed {
+  color: var(--completed-color);
+  font-weight: 700;
 }

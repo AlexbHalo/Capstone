@@ -103,20 +103,29 @@
           });
         }
         
+        function escapeHtml(value){
+          return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
         function renderCombined(base, sessions){
           const filteredSessions = filterSessions(sessions);
-          let txt = base;
-          if (base) txt += '\n\n';
-          txt += 'Recorded Sessions (from this browser):\n';
+          let html = escapeHtml(base);
+          if (base) html += '\n\n';
+          html += escapeHtml('Recorded Sessions (from this browser):\n');
           if (!filteredSessions || !filteredSessions.length) {
-            txt += '(no recorded sessions matching filters)\n';
+            html += escapeHtml('(no recorded sessions matching filters)\n');
           } else {
             filteredSessions.forEach(s => {
-              const completedTag = s.completed ? ' [completed]' : '';
-              txt += `- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}${completedTag}\n`;
+              const completedTag = s.completed ? ' <span class="completed">[completed]</span>' : '';
+              html += escapeHtml(`- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}`) + completedTag + '\n';
             });
           }
-          out.textContent = txt;
+          out.innerHTML = html;
         }
         
         function rerender(){
