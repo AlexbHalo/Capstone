@@ -78,9 +78,15 @@ button {
 
 /* Theme toggle button */
 #themeToggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  padding: 10px 15px;
+  margin: 0;
+  min-width: auto;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Custom mode button */
+#customModeBtn {
   padding: 10px 15px;
   margin: 0;
   min-width: auto;
@@ -302,4 +308,18 @@ html[data-theme="light"] #filterSection button {
 #log .completed {
   color: var(--completed-color);
   font-weight: 700;
+}
+
+#themeControls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#logo {
+  width: 50%;
+  height: auto;
 }
