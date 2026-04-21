@@ -132,6 +132,16 @@
       </p>
       <p style="margin: 10px 0;">
         <label style="display: block; margin-bottom: 10px;">
+          Completion Status:
+          <select id="filterStatus" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+            <option value="all">All</option>
+            <option value="completed">Completed only</option>
+            <option value="uncompleted">Uncompleted only</option>
+          </select>
+        </label>
+      </p>
+      <p style="margin: 10px 0;">
+        <label style="display: block; margin-bottom: 10px;">
           Date From:
           <input type="date" id="filterDateFrom" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
         </label>
@@ -154,6 +164,7 @@
       (function(){
         const out = document.getElementById('log');
         const filterAssignmentInput = document.getElementById('filterAssignment');
+        const filterStatus = document.getElementById('filterStatus');
         const filterDateFromInput = document.getElementById('filterDateFrom');
         const filterDateToInput = document.getElementById('filterDateTo');
         const clearFiltersBtn = document.getElementById('clearFilters');
@@ -173,12 +184,21 @@
         
         function filterSessions(sessions){
           const assignmentFilter = filterAssignmentInput.value.toLowerCase().trim();
+          const statusFilter = filterStatus.value;
           const dateFromFilter = filterDateFromInput.value; // YYYY-MM-DD
           const dateToFilter = filterDateToInput.value;     // YYYY-MM-DD
           
           return sessions.filter(s => {
             // Filter by assignment name
             if (assignmentFilter && !s.assignment.toLowerCase().includes(assignmentFilter)) {
+              return false;
+            }
+            
+            // Filter by status
+            if (statusFilter === 'completed' && !s.completed) {
+              return false;
+            }
+            if (statusFilter === 'uncompleted' && s.completed) {
               return false;
             }
             
@@ -247,11 +267,13 @@
         
         // Add event listeners to filter inputs
         filterAssignmentInput.addEventListener('input', rerender);
+        filterStatus.addEventListener('change', rerender);
         filterDateFromInput.addEventListener('change', rerender);
         filterDateToInput.addEventListener('change', rerender);
         
         clearFiltersBtn.addEventListener('click', function(){
           filterAssignmentInput.value = '';
+          filterStatus.value = 'all';
           filterDateFromInput.value = '';
           filterDateToInput.value = '';
           rerender();
