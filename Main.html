@@ -25,6 +25,7 @@
     <div id="timerSetup">
       <p class="assignment-row">
         <label>Assignment/Task:<input type="text" id="assignmentName" placeholder="What are you working on?"></label>
+        <select id="assignmentHistory"></select>
       </p>
       <p>
         <label>Work minutes: <input type="number" id="workMinutes" min="1" value="25"></label>
@@ -53,8 +54,6 @@
       </div>
     </div>
     <div id="customModeOverlay"></div>
-</body>
-</head>
     <script>
     document.addEventListener('DOMContentLoaded', function(){
       try {
@@ -240,4 +239,5 @@
       }
     });
     </script>
+  </body>
 </html>
