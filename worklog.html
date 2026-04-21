@@ -123,17 +123,17 @@
     </script>
     
     <div id="filterSection" style="margin: 20px auto; padding: 20px; background-color: #222; border-radius: 8px; max-width: 600px; text-align: left;">
-      <h3 style="margin-top: 0; color: palegoldenrod;">Filter Entries</h3>
+      <h3 style="margin-top: 0; color: var(--accent-color);">Filter Entries</h3>
       <p style="margin: 10px 0;">
         <label style="display: block; margin-bottom: 10px;">
           Assignment Name:
-          <input type="text" id="filterAssignment" placeholder="Search by task name..." style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+          <input type="text" id="filterAssignment" placeholder="Search by task name..." style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--accent-color);">
         </label>
       </p>
       <p style="margin: 10px 0;">
         <label style="display: block; margin-bottom: 10px;">
           Completion Status:
-          <select id="filterStatus" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+          <select id="filterStatus" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--accent-color);">
             <option value="all">All</option>
             <option value="completed">Completed only</option>
             <option value="uncompleted">Uncompleted only</option>
@@ -143,13 +143,13 @@
       <p style="margin: 10px 0;">
         <label style="display: block; margin-bottom: 10px;">
           Date From:
-          <input type="date" id="filterDateFrom" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+          <input type="date" id="filterDateFrom" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--accent-color);">
         </label>
       </p>
       <p style="margin: 10px 0;">
         <label style="display: block; margin-bottom: 10px;">
           Date To:
-          <input type="date" id="filterDateTo" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid palegoldenrod;">
+          <input type="date" id="filterDateTo" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--accent-color);">
         </label>
       </p>
       <button id="clearFilters" style="width: 100%; padding: 10px; background-color: #666; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Filters</button>
@@ -233,7 +233,7 @@
             html += escapeHtml('(no recorded sessions matching filters)\n');
           } else {
             filteredSessions.forEach(s => {
-              const completedTag = s.completed ? ' <span class="completed">[completed]</span>' : '';
+              const completedTag = s.completed ? ` <span style="color: var(--accent-color);">[completed]</span>` : '';
               html += escapeHtml(`- ${fmtDate(s.start)} → ${fmtDate(s.end)} (${s.minutes} min): ${s.assignment}`) + completedTag + '\n';
             });
           }
