@@ -8,6 +8,7 @@
   </head>
   <body>
     <h1>Timer</h1>
+    <div id="notification" style="display:none; position:fixed; top:10px; left:50%; transform:translateX(-50%); background:#ffeb3b; color:black; padding:10px 20px; border-radius:5px; box-shadow:0 2px 10px rgba(0,0,0,0.3); z-index:1000; font-size:1.1rem;"></div>
     <div id="themeControls">
       <button id="themeToggle">Light Mode</button>
       <button id="customModeBtn">Custom Mode</button>
@@ -171,6 +172,38 @@
       let totalTime = workMinutes * 60; // track total time for progress calculation
       let interval = null;
       let paused = false;
+
+      // Load saved timer state if exists
+      if (assignmentDisplay.textContent == currentAssignment) {
+        savedMode = localStorage.getItem('timerMode');
+        if (savedMode) {
+          mode = savedMode;
+          remaining = parseInt(localStorage.getItem('timerRemaining'), 10);
+          totalTime = parseInt(localStorage.getItem('timerTotalTime'), 10);
+          paused = localStorage.getItem('timerPaused') === 'true';
+          // Remove saved state after loading
+          localStorage.removeItem('timerMode');
+          localStorage.removeItem('timerRemaining');
+          localStorage.removeItem('timerTotalTime');
+          localStorage.removeItem('timerPaused');
+      }}
+
+      // Save timer state on page unload
+      window.addEventListener('beforeunload', function() {
+        localStorage.setItem('timerMode', mode);
+        localStorage.setItem('timerRemaining', remaining);
+        localStorage.setItem('timerTotalTime', totalTime);
+        localStorage.setItem('timerPaused', paused);
+      });
+
+      function showNotification(message) {
+        const notif = document.getElementById('notification');
+        notif.textContent = message;
+        notif.style.display = 'block';
+        setTimeout(() => {
+          notif.style.display = 'none';
+        }, 3000);
+      }
 
       function formatTime(s){
         const m = Math.floor(s/60);
