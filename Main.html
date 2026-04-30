@@ -189,6 +189,9 @@
     const breakInput = document.getElementById('breakMinutes');
     const beginBtn = document.getElementById('beginBtn');
 
+    const settings = loadTimerSettings();
+    workInput.value = settings.work;
+    breakInput.value = settings.break;
     function updateBeginState(){
       const w = parseInt(workInput.value,10);
       const b = parseInt(breakInput.value,10);
@@ -211,6 +214,15 @@
         // SAVE PER USER
         localStorage.setItem(`workMinutes_${user}`, String(w));
         localStorage.setItem(`breakMinutes_${user}`, String(b));
+        
+        // =====================
+        // LOAD LAST TIMER VALUES
+        // =====================
+        const savedWork = localStorage.getItem(`workMinutes_${user}`);
+        const savedBreak = localStorage.getItem(`breakMinutes_${user}`);
+
+        if (savedWork) workInput.value = savedWork;
+        if (savedBreak) breakInput.value = savedBreak;
 
         const assignment = assignmentInput.value.trim();
         localStorage.setItem(`currentAssignment_${user}`, assignment);

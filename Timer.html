@@ -161,9 +161,10 @@
         loopMode = savedLoopMode === 'true';
       }
       updateLoopToggleText();
+      const user = localStorage.getItem('currentUser');
 
-      let workMinutes = parseInt(localStorage.getItem('workMinutes'),10);
-      let breakMinutes = parseInt(localStorage.getItem('breakMinutes'),10);
+      let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
+      let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
       if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
       if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
 
