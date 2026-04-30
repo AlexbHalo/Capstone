@@ -153,7 +153,7 @@
       }
 
       // Get and display the current assignment
-      const currentAssignment = localStorage.getItem('currentAssignment') || 'Untitled';
+      const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
       assignmentDisplay.textContent = currentAssignment;
 
       const savedLoopMode = localStorage.getItem('loopMode');
@@ -230,8 +230,8 @@
             if (mode === 'work'){
               // record the completed work session
               try {
-                const assignment = localStorage.getItem('currentAssignment') || 'Untitled';
-                const startMs = parseInt(localStorage.getItem('currentAssignmentStart'),10) || (Date.now() - workMinutes*60*1000);
+                const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
+                const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
                 const endMs = Date.now();
                 const minutes = Math.round((endMs - startMs)/60000);
                 addWorkSession({
@@ -253,7 +253,7 @@
               // break finished: either loop or return to Main
               if (loopMode) {
                 try {
-                  localStorage.setItem('currentAssignmentStart', String(Date.now()));
+                  localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
                 } catch (err) {}
                 mode = 'work';
                 remaining = workMinutes * 60;
@@ -263,8 +263,8 @@
                 return;
               }
               try {
-                localStorage.removeItem('currentAssignment');
-                localStorage.removeItem('currentAssignmentStart');
+                localStorage.removeItem(`currentAssignment_${user}`);
+                localStorage.removeItem(`currentAssignmentStart_${user}`);
               } catch (err) {}
               alert('Break complete — returning to Main.');
               window.location.href = 'Main.html';
@@ -304,8 +304,8 @@
         dialogOverlay.style.display = 'none';
         // record the current work session with completed flag
         try {
-          const assignment = localStorage.getItem('currentAssignment') || 'Untitled';
-          const startMs = parseInt(localStorage.getItem('currentAssignmentStart'),10) || (Date.now() - workMinutes*60*1000);
+          const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
+          const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
           const endMs = Date.now();
           const minutesWorked = Math.round((endMs - startMs)/60000);
           addWorkSession({
@@ -315,8 +315,8 @@
             minutes: minutesWorked,
             completed: true
           });
-          localStorage.removeItem('currentAssignment');
-          localStorage.removeItem('currentAssignmentStart');
+          localStorage.removeItem(`currentAssignment_${user}`);
+          localStorage.removeItem(`currentAssignmentStart_${user}`);
         } catch (err) {}
         // navigate to worklog
         window.location.href = 'worklog.html';
