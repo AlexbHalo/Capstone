@@ -262,8 +262,7 @@
         }).catch(() => {
           baseText = '';
           try {
-            const sessions = getWorkSessions();
-            allSessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+            allSessions = getWorkSessions();
           } catch (err) {
             allSessions = [];
           }
