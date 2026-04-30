@@ -37,8 +37,8 @@
     <div class="container-lg px-3 my-5 markdown-body">
       
 
-      <h1 id="capstone">Ascensions</h1>
-      <h3 id="capstone">We want to help you Ascend</h3>
+      <h1 id="capstone">Ascend</h1>
+      <h3 id="capstone">The journey of Ascensions</h3>
 	  <br></br>
 	  <br></br>
     <br></br>
@@ -48,7 +48,9 @@
 	  <br></br>
     <br></br>
 	  <br></br>
-    <button onclick="window.location.href='signup.html'">Sign-up Now</button>
+    <a href="signup.html">
+      <button>Sign-Up Now</button>
+    </a>
 
     <button onclick="login()">Log-In Now</button>
     <div id="loginForm" class="hidden">
@@ -60,87 +62,8 @@
     <!-- Enter button is hidden until Log-In is clicked -->
     <button id="enterBtn" class="hidden" onclick="enterSite(event)" disabled>Enter</button>
 
-    <script>
-    const BLANK_MSG = 'Can Not Be Left Blank';
-
-    function login() {
-      document.getElementById("loginForm").classList.toggle("show");
-      // show the Enter button when login form is toggled
-      document.getElementById("enterBtn").classList.toggle("show");
-      // update disabled state
-      updateEnterState();
-    }
-
-    function updateEnterState() {
-      const u = document.getElementById('loginUsername');
-      const p = document.getElementById('loginPassword');
-      const enterBtn = document.getElementById('enterBtn');
-      if (!u || !p) return;
-      const empty = !u.value || u.value === BLANK_MSG || !p.value || p.value === BLANK_MSG;
-      enterBtn.disabled = empty;
-    }
-
-    function clearLoginError() {
-      const err = document.getElementById('loginError');
-      if (err) err.textContent = '';
-    }
-
-    document.addEventListener('DOMContentLoaded', function(){
-      const u = document.getElementById('loginUsername');
-      const p = document.getElementById('loginPassword');
-      if (!u || !p) return;
-      u.addEventListener('input', updateEnterState);
-      p.addEventListener('input', updateEnterState);
-      u.addEventListener('input', clearLoginError);
-      p.addEventListener('input', clearLoginError);
-
-      [u,p].forEach(el => {
-        el.addEventListener('focus', function(){
-          if (this.value === BLANK_MSG) {
-            this.value = '';
-            this.classList.remove('blank');
-          }
-        });
-        el.addEventListener('blur', function(){
-          if (!this.value) {
-            this.value = BLANK_MSG;
-            this.classList.add('blank');
-            updateEnterState();
-          }
-        });
-      });
-    });
-
-    function enterSite(e) {
-      const u = document.getElementById('loginUsername');
-      const p = document.getElementById('loginPassword');
-      let blocked = false;
-      if (!u.value || u.value === BLANK_MSG) { u.value = BLANK_MSG; u.classList.add('blank'); blocked = true; }
-      if (!p.value || p.value === BLANK_MSG) { p.value = BLANK_MSG; p.classList.add('blank'); blocked = true; }
-      if (blocked) {
-        // prevent navigation
-        return false;
-      }
-      // validate against stored users object in localStorage
-      try {
-        const usersRaw = localStorage.getItem('users');
-        const users = usersRaw ? JSON.parse(usersRaw) : {};
-        const user = users[u.value];
-        if (!user || user.password !== p.value) {
-          const err = document.getElementById('loginError');
-          if (err) err.textContent = 'Invalid username or password';
-          u.classList.add('blank');
-          p.classList.add('blank');
-          return false;
-        }
-        // set current user for Main.html to read
-        localStorage.setItem('currentUser', u.value);
-      } catch (err) {}
-      // navigate to Main.html
-      window.location.href = 'Main.html';
-    }
-    </script>
+    
     </div>
-    <script>anchors.add();</script>
+    <script src="script.js"></script>
   </body>
 </html>

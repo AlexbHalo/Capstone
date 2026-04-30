@@ -262,7 +262,7 @@
         }).catch(() => {
           baseText = '';
           try {
-            const sessionsRaw = localStorage.getItem('workSessions');
+            const sessions = getWorkSessions();
             allSessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
           } catch (err) {
             allSessions = [];
@@ -285,5 +285,8 @@
         });
       })();
     </script>
+    <script src="storage.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>

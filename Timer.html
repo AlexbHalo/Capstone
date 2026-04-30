@@ -304,10 +304,12 @@
           const startMs = parseInt(localStorage.getItem('currentAssignmentStart'),10) || (Date.now() - workMinutes*60*1000);
           const endMs = Date.now();
           const minutesWorked = Math.round((endMs - startMs)/60000);
-          const sessionsRaw = localStorage.getItem('workSessions');
-          const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
-          sessions.push({ assignment, start: startMs, end: endMs, minutes: minutesWorked, completed: true });
-          localStorage.setItem('workSessions', JSON.stringify(sessions));
+          addWorkSession({
+            assignment,
+            start: startMs,
+            end: endMs,
+            minutes
+          });
           localStorage.removeItem('currentAssignment');
           localStorage.removeItem('currentAssignmentStart');
         } catch (err) {}
@@ -333,5 +335,8 @@
       setTimeout(startInterval, 300);
     })();
     </script>
+    <script src="storage.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>

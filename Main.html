@@ -1,245 +1,227 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Ascend</title>
 <head>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ascend</title>
+
+  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <h1>Welcome to your Ascension</h1>
-    <h2 id="userNickname"></h2>
-    <img src="Triple T Uno S.jpg" alt="Ascend Logo" id="logo" width="50" height="40">
-    <div id="themeControls">
-      <button id="themeToggle">Light Mode</button>
-      <button id="customModeBtn">Custom Mode</button>
-    </div>
-    <br></br>
-      <br></br>
-    <br></br>
-      <br></br>
-    <div id="timerSetup">
-      <p class="assignment-row" style="display: flex; align-items: center;">
-        <label style="margin-right: 10px;">Assignment/Task:<input type="text" id="assignmentName" placeholder="What are you working on?"></label>
-        <select id="assignmentHistory" style="margin-left: 10px;"></select>
-      </p>
-      <p>
-        <label>Work minutes: <input type="number" id="workMinutes" min="1" value="25"></label>
-        <label>Break minutes: <input type="number" id="breakMinutes" min="1" value="5"></label>
-      </p>
-      <button id="beginBtn" disabled>Begin Working</button>
-    </div>
-    <a href="HTML.html">
-      <button>Back to Log-In</button>
-    </a>
-    <a href="worklog.html">
-      <button>View Work Log</button>
-    </a>
-    <a href="Adapt.html">
-      <button>ASCEND</button>
-    </a>
-    <div id="customModeDialog">
-      <h3>Custom Mode Colors</h3>
-      <div class="color-picker-row">
-        <label>Base<input type="color" id="customBaseColor"></label>
-        <label>Primary<input type="color" id="customPrimaryColor"></label>
-        <label>Sub<input type="color" id="customSubColor"></label>
-      </div>
-      <div class="modal-actions">
-        <button id="saveCustomMode">Save</button>
-        <button id="resetCustomMode">Reset</button>
-        <button id="cancelCustomMode">Cancel</button>
-      </div>
-    </div>
-    <div id="customModeOverlay"></div>
-    <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      try {
-        const current = localStorage.getItem('currentUser');
-        const usersRaw = localStorage.getItem('users');
-        const users = usersRaw ? JSON.parse(usersRaw) : {};
-        const nick = current && users[current] ? users[current].nickname : null;
-        const el = document.getElementById('userNickname');
-        if (el) el.textContent = nick ? ` ${nick}` : '';
-      } catch (err) {}
 
-      // Theme toggle setup
-      const themeToggle = document.getElementById('themeToggle');
-      const customModeBtn = document.getElementById('customModeBtn');
-      const customModeDialog = document.getElementById('customModeDialog');
-      const customModeOverlay = document.getElementById('customModeOverlay');
-      const customBaseColor = document.getElementById('customBaseColor');
-      const customPrimaryColor = document.getElementById('customPrimaryColor');
-      const customSubColor = document.getElementById('customSubColor');
-      const saveCustomModeBtn = document.getElementById('saveCustomMode');
-      const cancelCustomModeBtn = document.getElementById('cancelCustomMode');
-      const resetCustomModeBtn = document.getElementById('resetCustomMode');
+  <h1>Your Journey to Ascension</h1>
+  <h2 id="userNickname"></h2>
 
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
+  <img src="Triple T Uno S.jpg" alt="Ascend Logo" id="logo" width="50" height="40">
+
+  <div id="themeControls">
+    <button id="themeToggle">Light Mode</button>
+    <button id="customModeBtn">Custom Mode</button>
+  </div>
+
+  <br><br><br><br>
+
+  <div id="timerSetup">
+    <p class="assignment-row" style="display: flex; align-items: center;">
+      <label style="margin-right: 10px;">
+        Assignment/Task:
+        <input type="text" id="assignmentName" placeholder="What are you working on?">
+      </label>
+      <select id="assignmentHistory" style="margin-left: 10px;"></select>
+    </p>
+
+    <p>
+      <label>Work minutes: <input type="number" id="workMinutes" min="1" value="25"></label>
+      <label>Break minutes: <input type="number" id="breakMinutes" min="1" value="5"></label>
+    </p>
+
+    <button id="beginBtn" disabled>Begin Working</button>
+  </div>
+
+  <a href="HTML.html"><button>Back to Log-In</button></a>
+  <a href="worklog.html"><button>View Work Log</button></a>
+  <a href="Adapt.html"><button>ASCEND</button></a>
+
+  <!-- CUSTOM COLORS -->
+  <div id="customModeDialog">
+    <h3>Custom Mode Colors</h3>
+    <div class="color-picker-row">
+      <label>Base<input type="color" id="customBaseColor"></label>
+      <label>Primary<input type="color" id="customPrimaryColor"></label>
+      <label>Sub<input type="color" id="customSubColor"></label>
+    </div>
+
+    <div class="modal-actions">
+      <button id="saveCustomMode">Save</button>
+      <button id="resetCustomMode">Reset</button>
+      <button id="cancelCustomMode">Cancel</button>
+    </div>
+  </div>
+
+  <div id="customModeOverlay"></div>
+
+
+  <!-- ========================= -->
+  <!-- SCRIPTS (ORDER MATTERS) -->
+  <!-- ========================= -->
+  <script src="storage.js"></script>
+  <script src="theme.js"></script>
+  <script src="app.js"></script>
+  <script src="script.js"></script>
+
+  <!-- ========================= -->
+  <!-- PAGE LOGIC -->
+  <!-- ========================= -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function(){
+
+    // 👤 Ensure logged in
+    const user = getCurrentUser();
+    if (!user) {
+      window.location.href = 'HTML.html';
+      return;
+    }
+
+    // 👤 Show nickname
+    try {
+      const usersRaw = localStorage.getItem('users');
+      const users = usersRaw ? JSON.parse(usersRaw) : {};
+      const nick = users[user] ? users[user].nickname : '';
+      const el = document.getElementById('userNickname');
+      if (el) el.textContent = nick ? ` ${nick}` : '';
+    } catch (err) {}
+
+    // 🌙 Load theme
+    const savedTheme = loadTheme();
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 🎨 Load colors
+    const customColors = loadCustomColors();
+    if (customColors) applyCustomColors(customColors);
+
+    // =====================
+    // THEME BUTTON
+    // =====================
+    const themeToggle = document.getElementById('themeToggle');
+
+    if (themeToggle) {
       themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
 
-      let customColors = null;
-      function toHex(color) {
-        const ctx = document.createElement('canvas').getContext('2d');
-        ctx.fillStyle = color;
-        return ctx.fillStyle;
+      themeToggle.addEventListener('click', function(){
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        saveTheme(newTheme);
+
+        themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+        const colors = loadCustomColors();
+        if (colors) applyCustomColors(colors);
+      });
+    }
+
+    // =====================
+    // CUSTOM COLORS
+    // =====================
+    const customModeBtn = document.getElementById('customModeBtn');
+    const dialog = document.getElementById('customModeDialog');
+    const overlay = document.getElementById('customModeOverlay');
+
+    const baseInput = document.getElementById('customBaseColor');
+    const primaryInput = document.getElementById('customPrimaryColor');
+    const subInput = document.getElementById('customSubColor');
+
+    const saveBtn = document.getElementById('saveCustomMode');
+    const cancelBtn = document.getElementById('cancelCustomMode');
+    const resetBtn = document.getElementById('resetCustomMode');
+
+    function openDialog() {
+      const current = loadCustomColors();
+      if (current) {
+        baseInput.value = current.base;
+        primaryInput.value = current.primary;
+        subInput.value = current.sub;
       }
-      function applyCustomColors(colors) {
-        if (!colors) return;
-        document.documentElement.style.setProperty('--bg-primary', colors.base);
-        document.documentElement.style.setProperty('--accent-color', colors.primary);
-        document.documentElement.style.setProperty('--bg-secondary', colors.sub);
-      }
-      function loadCustomColors() {
-        try {
-          const stored = localStorage.getItem('customColors');
-          if (stored) {
-            customColors = JSON.parse(stored);
-            applyCustomColors(customColors);
-          }
-        } catch (err) {}
-      }
-      function closeCustomModeDialog() {
-        if (customModeDialog) customModeDialog.style.display = 'none';
-        if (customModeOverlay) customModeOverlay.style.display = 'none';
-      }
-      function openCustomModeDialog() {
-        const styles = getComputedStyle(document.documentElement);
-        const current = customColors || {
-          base: toHex(styles.getPropertyValue('--bg-primary').trim()),
-          primary: toHex(styles.getPropertyValue('--accent-color').trim()),
-          sub: toHex(styles.getPropertyValue('--bg-secondary').trim())
+      dialog.style.display = 'block';
+      overlay.style.display = 'block';
+    }
+
+    function closeDialog() {
+      dialog.style.display = 'none';
+      overlay.style.display = 'none';
+    }
+
+    if (customModeBtn) customModeBtn.onclick = openDialog;
+    if (cancelBtn) cancelBtn.onclick = closeDialog;
+    if (overlay) overlay.onclick = closeDialog;
+
+    if (saveBtn) {
+      saveBtn.onclick = function(){
+        const colors = {
+          base: baseInput.value,
+          primary: primaryInput.value,
+          sub: subInput.value
         };
-        customBaseColor.value = current.base;
-        customPrimaryColor.value = current.primary;
-        customSubColor.value = current.sub;
-        if (customModeDialog) customModeDialog.style.display = 'block';
-        if (customModeOverlay) customModeOverlay.style.display = 'block';
-      }
-      function resetCustomMode() {
-        localStorage.removeItem('customColors');
-        customColors = null;
+        saveCustomColors(colors);
+        applyCustomColors(colors);
+        closeDialog();
+      };
+    }
+
+    if (resetBtn) {
+      resetBtn.onclick = function(){
+        saveCustomColors(null);
         document.documentElement.style.removeProperty('--bg-primary');
         document.documentElement.style.removeProperty('--accent-color');
         document.documentElement.style.removeProperty('--bg-secondary');
-        closeCustomModeDialog();
-      }
-      function saveCustomMode() {
-        customColors = {
-          base: customBaseColor.value,
-          primary: customPrimaryColor.value,
-          sub: customSubColor.value
-        };
-        localStorage.setItem('customColors', JSON.stringify(customColors));
-        applyCustomColors(customColors);
-        closeCustomModeDialog();
-      }
+        closeDialog();
+      };
+    }
 
-      if (themeToggle) {
-        themeToggle.addEventListener('click', function(){
-          const currentTheme = document.documentElement.getAttribute('data-theme');
-          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', newTheme);
-          localStorage.setItem('theme', newTheme);
-          themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-          if (customColors) applyCustomColors(customColors);
-        });
-      }
-      if (customModeBtn) customModeBtn.addEventListener('click', openCustomModeDialog);
-      if (saveCustomModeBtn) saveCustomModeBtn.addEventListener('click', saveCustomMode);
-      if (cancelCustomModeBtn) cancelCustomModeBtn.addEventListener('click', closeCustomModeDialog);
-      if (resetCustomModeBtn) resetCustomModeBtn.addEventListener('click', resetCustomMode);
-      if (customModeOverlay) customModeOverlay.addEventListener('click', closeCustomModeDialog);
+    // =====================
+    // TIMER SETUP
+    // =====================
+    const assignmentInput = document.getElementById('assignmentName');
+    const assignmentHistory = document.getElementById('assignmentHistory');
+    const workInput = document.getElementById('workMinutes');
+    const breakInput = document.getElementById('breakMinutes');
+    const beginBtn = document.getElementById('beginBtn');
 
-      loadCustomColors();
+    function updateBeginState(){
+      const w = parseInt(workInput.value,10);
+      const b = parseInt(breakInput.value,10);
+      const a = assignmentInput.value && assignmentInput.value.trim().length > 0;
+      beginBtn.disabled = !(w >= 1 && b >= 1 && a);
+    }
 
-      // Timer setup controls
-      const assignmentInput = document.getElementById('assignmentName');
-      const assignmentHistory = document.getElementById('assignmentHistory');
-      const workInput = document.getElementById('workMinutes');
-      const breakInput = document.getElementById('breakMinutes');
-      const beginBtn = document.getElementById('beginBtn');
-      function updateBeginState(){
-        const w = workInput && parseInt(workInput.value,10);
-        const b = breakInput && parseInt(breakInput.value,10);
-        // require a non-empty assignment name as well
-        const a = assignmentInput && assignmentInput.value && String(assignmentInput.value).trim().length > 0;
-        beginBtn.disabled = !(w >= 1 && b >= 1 && a);
-      }
-      if (workInput && breakInput && beginBtn){
-        // initialize from saved settings if present
-        const savedW = parseInt(localStorage.getItem('workMinutes'),10);
-        const savedB = parseInt(localStorage.getItem('breakMinutes'),10);
-        if (!isNaN(savedW)) workInput.value = savedW;
-        if (!isNaN(savedB)) breakInput.value = savedB;
-        workInput.addEventListener('input', updateBeginState);
-        breakInput.addEventListener('input', updateBeginState);
-        if (assignmentInput) {
-          // restore previous assignment if present
-          const prevA = localStorage.getItem('currentAssignment');
-          if (prevA) assignmentInput.value = prevA;
-          
-          // Populate the dropdown with uncompleted task names
-          try {
-            const sessionsRaw = localStorage.getItem('workSessions');
-            const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : [];
-            const incompleteAssignments = [];
-            if (sessions.length > 0) {
-              // Find incomplete tasks from oldest to newest and add unique assignments
-              for (let i = 0; i < sessions.length; i++) {
-                if (!sessions[i].completed && sessions[i].assignment) {
-                  const assignmentName = String(sessions[i].assignment).trim();
-                  if (assignmentName && !incompleteAssignments.includes(assignmentName)) {
-                    incompleteAssignments.push(assignmentName);
-                  }
-                }
-              }
-            }
-            if (assignmentHistory) {
-              assignmentHistory.innerHTML = '<option value="">Choose unfinished task</option>' + incompleteAssignments
-                .map(name => `<option value="${name}">${name}</option>`)
-                .join('');
-              if (!assignmentInput.value && incompleteAssignments.length > 0) {
-                assignmentInput.value = incompleteAssignments[0];
-              }
-              if (assignmentInput.value) {
-                assignmentHistory.value = assignmentInput.value;
-              }
-            }
-            if (!assignmentInput.value && incompleteAssignments.length > 0) {
-              assignmentInput.value = incompleteAssignments[0];
-            }
-          } catch (err) {}
-          
-          if (assignmentHistory) {
-            assignmentHistory.addEventListener('change', function(){
-              if (assignmentHistory.value) {
-                assignmentInput.value = assignmentHistory.value;
-                updateBeginState();
-              }
-            });
-          }
-          assignmentInput.addEventListener('input', updateBeginState);
-        }
-        updateBeginState();
-        beginBtn.addEventListener('click', function(){
-          const w = Math.max(1, parseInt(workInput.value,10) || 25);
-          const b = Math.max(1, parseInt(breakInput.value,10) || 5);
-          // save settings and current assignment + start time
-          localStorage.setItem('workMinutes', String(w));
-          localStorage.setItem('breakMinutes', String(b));
-          const assignment = assignmentInput ? String(assignmentInput.value).trim() : '';
-          localStorage.setItem('currentAssignment', assignment);
-          localStorage.setItem('currentAssignmentStart', String(Date.now()));
-          window.location.href = 'Timer.html';
-        });
-      }
-    });
-    </script>
-  </body>
+    if (workInput && breakInput && beginBtn){
+
+      workInput.addEventListener('input', updateBeginState);
+      breakInput.addEventListener('input', updateBeginState);
+      assignmentInput.addEventListener('input', updateBeginState);
+
+      updateBeginState();
+
+      beginBtn.addEventListener('click', function(){
+        const w = Math.max(1, parseInt(workInput.value,10) || 25);
+        const b = Math.max(1, parseInt(breakInput.value,10) || 5);
+
+        // SAVE PER USER
+        localStorage.setItem(`workMinutes_${user}`, String(w));
+        localStorage.setItem(`breakMinutes_${user}`, String(b));
+
+        const assignment = assignmentInput.value.trim();
+        localStorage.setItem(`currentAssignment_${user}`, assignment);
+        localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
+
+        window.location.href = 'Timer.html';
+      });
+    }
+
+  });
+  </script>
+
+</body>
 </html>
