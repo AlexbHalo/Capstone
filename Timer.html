@@ -239,11 +239,12 @@
     interval = setInterval(function(){
     if (paused) return;
 
-    remaining -= 1;
-
+    remaining = Math.max(0, remaining - 1);
     if (remaining <= 0){
       clearInterval(interval);
       interval = null;
+
+      remaining = 0; // clamp
 
       if (mode === 'work'){
         try {
@@ -272,7 +273,7 @@
         return;
       }
 
-      if (loopMode) {
+      else {
         try {
           localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
         } catch (err) {}
@@ -283,8 +284,7 @@
 
         render();
         startInterval();
-        return;
-      }
+      }return;
 
       localStorage.removeItem(`currentAssignment_${user}`);
       localStorage.removeItem(`currentAssignmentStart_${user}`);
