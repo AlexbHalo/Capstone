@@ -19,7 +19,7 @@
     <div>
       <button id="pauseBtn">Pause</button>
       <button id="completedBtn">Completed</button>
-      <a href="Main.html"><button>Back</button></a>
+      <button onclick="window.location.href='Main.html'">Back</button>
     </div>
     <div id="progressBarContainer">
       <div id="progressBarFill"></div>
@@ -177,19 +177,18 @@
       let paused = false;
 
       // Load saved timer state if exists
-      if (assignmentDisplay.textContent == currentAssignment) {
-        savedMode = localStorage.getItem('timerMode');
-        if (savedMode) {
-          mode = savedMode;
-          remaining = parseInt(localStorage.getItem('timerRemaining'), 10);
-          totalTime = parseInt(localStorage.getItem('timerTotalTime'), 10);
-          paused = localStorage.getItem('timerPaused') === 'true';
-          // Remove saved state after loading
-          localStorage.removeItem('timerMode');
-          localStorage.removeItem('timerRemaining');
-          localStorage.removeItem('timerTotalTime');
-          localStorage.removeItem('timerPaused');
-      }}
+      const savedMode = localStorage.getItem('timerMode');
+      if (savedMode) {
+        mode = savedMode;
+        remaining = parseInt(localStorage.getItem('timerRemaining'), 10);
+        totalTime = parseInt(localStorage.getItem('timerTotalTime'), 10);
+        paused = localStorage.getItem('timerPaused') === 'true';
+
+        localStorage.removeItem('timerMode');
+        localStorage.removeItem('timerRemaining');
+        localStorage.removeItem('timerTotalTime');
+        localStorage.removeItem('timerPaused');
+      }
 
       // Save timer state on page unload
       window.addEventListener('beforeunload', function() {
@@ -240,7 +239,7 @@
                   assignment,
                   start: startMs,
                   end: endMs,
-                  minutes: minutesWorked,
+                  minutes: minutes,
                   completed: true
                 });
               } catch (err) {}
@@ -314,7 +313,7 @@
             assignment,
             start: startMs,
             end: endMs,
-            minutes: minutesWorked,
+            minutes: minutes,
             completed: true
           });
           localStorage.removeItem(`currentAssignment_${user}`);
