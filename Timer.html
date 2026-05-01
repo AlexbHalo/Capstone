@@ -123,7 +123,7 @@
       closeCustomModeDialog();
     }
 
-    const user = localStorage.getItem('currentUser');
+    
       if (!user) {
         alert("No user found. Returning to main.");
         window.location.href = "Main.html";
@@ -131,7 +131,6 @@
       }
       // Get and display the current assignment
       const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-      assignmentDisplay.textContent = currentAssignment;
 
       const savedLoopMode = localStorage.getItem('loopMode');
       if (savedLoopMode !== null) {
@@ -148,17 +147,14 @@
     }
       
 
-      let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
-      let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
+      
       if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
       if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
 
       let mode = 'work'; // 'work' or 'break'
       let remaining = workMinutes * 60;
       let totalTime = workMinutes * 60; // track total time for progress calculation
-      let interval = null;
-      let paused = false;
-
+      
     themeToggle.addEventListener('click', function(){
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -183,7 +179,20 @@
       const progressBarFill = document.getElementById('progressBarFill');
       const loopToggle = document.getElementById('loopToggle');
 
+      
+      
       let loopMode = true;
+      let paused = false;
+      let interval = null;
+      
+      const user = localStorage.getItem('currentUser');
+      
+
+      let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
+      let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
+      
+      assignmentDisplay.textContent = currentAssignment;
+      
       function updateLoopToggleText(){
         if (loopToggle) {
           loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
