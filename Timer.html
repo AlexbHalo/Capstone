@@ -151,7 +151,9 @@
           loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
         }
       }
-
+      
+      const user = localStorage.getItem('currentUser');
+      
       // Get and display the current assignment
       const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
       assignmentDisplay.textContent = currentAssignment;
@@ -161,7 +163,7 @@
         loopMode = savedLoopMode === 'true';
       }
       updateLoopToggleText();
-      const user = localStorage.getItem('currentUser');
+      
 
       let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
       let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
