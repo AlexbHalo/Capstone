@@ -47,8 +47,8 @@
     </div>
     <div id="dialogOverlay" style="display:none;position:fixed;inset-block-start:0;inset-inline-start:0;inset-inline-end:0;inset-block-end:0;background:rgba(0,0,0,0.5);z-index:998;"></div>
     <script src="storage.js"></script>
-    <script src="theme.js"></script>
     <script src="app.js"></script>
+    <script src="theme.js"></script>
     <script>
     // Theme toggle setup
     const themeToggle = document.getElementById('themeToggle');
@@ -169,6 +169,14 @@
         loopMode = savedLoopMode === 'true';
       }
       updateLoopToggleText();
+
+      if (loopToggle) {
+      loopToggle.addEventListener('click', function(){
+        loopMode = !loopMode;
+        localStorage.setItem('loopMode', String(loopMode));
+        updateLoopToggleText();
+      });
+    }
       
 
       let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
@@ -274,25 +282,28 @@
       }
 
       else {
-        try {
-          localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
-        } catch (err) {}
+  if (loopMode) {
+    try {
+      localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
+    } catch (err) {}
 
-        mode = 'work';
-        remaining = workMinutes * 60;
-        totalTime = workMinutes * 60;
+    mode = 'work';
+    remaining = workMinutes * 60;
+    totalTime = workMinutes * 60;
 
-        render();
-        startInterval();
-      }return;
+    render();
+    startInterval();
+    return;
+  }
 
-      localStorage.removeItem(`currentAssignment_${user}`);
-      localStorage.removeItem(`currentAssignmentStart_${user}`);
+  // NOT looping → go back to main
+  localStorage.removeItem(`currentAssignment_${user}`);
+  localStorage.removeItem(`currentAssignmentStart_${user}`);
 
-      alert('Break complete — returning to Main.');
-      window.location.href = 'Main.html';
-      return;
-    }
+  alert('Break complete — returning to Main.');
+  window.location.href = 'Main.html';
+  return;
+  }}
 
     render();
   }, 1000);
