@@ -122,8 +122,7 @@
       applyCustomColors(customColors);
       closeCustomModeDialog();
     }
-
-    themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    
     themeToggle.addEventListener('click', function(){
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -235,9 +234,7 @@
       }
 
       function startInterval(){
-        if (interval) return;
-        function startInterval(){
-  if (interval) clearInterval(interval); // ensure clean start
+  if (interval) clearInterval(interval);
 
   interval = setInterval(function(){
     if (paused) return;
@@ -299,73 +296,7 @@
 
     render();
   }, 1000);
-      }
-
-      pauseBtn.addEventListener('click', function(){
-        paused = !paused;
-        pauseBtn.textContent = paused ? 'Resume' : 'Pause';
-      });
-
-      if (loopToggle) {
-        loopToggle.addEventListener('click', function(){
-          loopMode = !loopMode;
-          localStorage.setItem('loopMode', String(loopMode));
-          updateLoopToggleText();
-        });
-      }
-      const confirmDialog = document.getElementById('confirmDialog');
-      const dialogOverlay = document.getElementById('dialogOverlay');
-      const confirmYes = document.getElementById('confirmYes');
-      const confirmNo = document.getElementById('confirmNo');
-
-      completedBtn.addEventListener('click', function(){
-        // show custom dialog
-        confirmDialog.style.display = 'block';
-        dialogOverlay.style.display = 'block';
-      });
-
-      confirmYes.addEventListener('click', function(){
-        // hide dialog
-        confirmDialog.style.display = 'none';
-        dialogOverlay.style.display = 'none';
-        // record the current work session with completed flag
-        try {
-          const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-          const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
-          const endMs = Date.now();
-          const minutesWorked = Math.round((endMs - startMs)/60000);
-          addWorkSession({
-          assignment,
-          start: startMs,
-          end: endMs,
-          minutes: minutesWorked,
-          completed: true
-        });
-          localStorage.removeItem(`currentAssignment_${user}`);
-          localStorage.removeItem(`currentAssignmentStart_${user}`);
-        } catch (err) {}
-        // navigate to worklog
-        window.location.href = 'worklog.html';
-      });
-
-      confirmNo.addEventListener('click', function(){
-        // hide dialog
-        confirmDialog.style.display = 'none';
-        dialogOverlay.style.display = 'none';
-        // resume timer if paused
-        if (paused) {
-          paused = false;
-          pauseBtn.textContent = 'Pause';
-        }
-      });
-      // Stop control removed; use Back to return or Pause to pause/resume
-
-      // initialize and auto-start
-      render();
-      // start shortly to allow UI render
-      setTimeout(startInterval, 300);
-    })();
+}
     </script>
-    
   </body>
 </html>
