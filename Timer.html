@@ -46,6 +46,9 @@
       <button id="confirmNo" style="background-color:#f44336;color:white;margin:0 10px;padding:12px 30px;border:none;border-radius:6px;cursor:pointer;font-size:1.1rem;">No</button>
     </div>
     <div id="dialogOverlay" style="display:none;position:fixed;inset-block-start:0;inset-inline-start:0;inset-inline-end:0;inset-block-end:0;background:rgba(0,0,0,0.5);z-index:998;"></div>
+    <script src="storage.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
     <script>
     // Theme toggle setup
     const themeToggle = document.getElementById('themeToggle');
@@ -153,7 +156,11 @@
       }
       
       const user = localStorage.getItem('currentUser');
-      
+      if (!user) {
+        alert("No user found. Returning to main.");
+        window.location.href = "Main.html";
+        return;
+      }
       // Get and display the current assignment
       const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
       assignmentDisplay.textContent = currentAssignment;
@@ -182,6 +189,10 @@
         mode = savedMode;
         remaining = parseInt(localStorage.getItem('timerRemaining'), 10);
         totalTime = parseInt(localStorage.getItem('timerTotalTime'), 10);
+
+        if (isNaN(remaining)) remaining = workMinutes * 60;
+        if (isNaN(totalTime)) totalTime = workMinutes * 60;
+        
         paused = localStorage.getItem('timerPaused') === 'true';
 
         localStorage.removeItem('timerMode');
@@ -217,63 +228,77 @@
         display.textContent = formatTime(remaining);
         modeName.textContent = mode === 'work' ? 'Work' : 'Break';
         // Update progress bar
-        const progress = Math.max(0, (totalTime - remaining) / totalTime);
+        const progress = totalTime > 0
+        ? (totalTime - remaining) / totalTime
+        : 0;
         progressBarFill.style.width = (progress * 100) + '%';
       }
 
       function startInterval(){
         if (interval) return;
-        interval = setInterval(function(){
-          if (paused) return;
-          remaining -= 1;
-          if (remaining <= 0){
-            clearInterval(interval); interval = null;
-            if (mode === 'work'){
-              // record the completed work session
-              try {
-                const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-                const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
-                const endMs = Date.now();
-                const minutes = Math.round((endMs - startMs)/60000);
-                addWorkSession({
-                  assignment,
-                  start: startMs,
-                  end: endMs,
-                  minutes: minutes,
-                  completed: true
-                });
-              } catch (err) {}
-              alert('Work period complete — starting break.');
-              mode = 'break';
-              remaining = breakMinutes * 60;
-              totalTime = breakMinutes * 60; // reset totalTime for break
-              render();
-              startInterval();
-              return;
-            } else {
-              // break finished: either loop or return to Main
-              if (loopMode) {
-                try {
-                  localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
-                } catch (err) {}
-                mode = 'work';
-                remaining = workMinutes * 60;
-                totalTime = workMinutes * 60;
-                render();
-                startInterval();
-                return;
-              }
-              try {
-                localStorage.removeItem(`currentAssignment_${user}`);
-                localStorage.removeItem(`currentAssignmentStart_${user}`);
-              } catch (err) {}
-              alert('Break complete — returning to Main.');
-              window.location.href = 'Main.html';
-              return;
-            }
-          }
-          render();
-        }, 1000);
+        function startInterval(){
+  if (interval) clearInterval(interval); // ensure clean start
+
+  interval = setInterval(function(){
+    if (paused) return;
+
+    remaining -= 1;
+
+    if (remaining <= 0){
+      clearInterval(interval);
+      interval = null;
+
+      if (mode === 'work'){
+        try {
+          const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
+          const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
+          const endMs = Date.now();
+          const minutes = Math.round((endMs - startMs)/60000);
+
+          addWorkSession({
+            assignment,
+            start: startMs,
+            end: endMs,
+            minutes: minutes,
+            completed: true
+          });
+        } catch (err) {}
+
+        alert('Work period complete — starting break.');
+
+        mode = 'break';
+        remaining = breakMinutes * 60;
+        totalTime = breakMinutes * 60;
+
+        render();
+        startInterval();
+        return;
+      }
+
+      if (loopMode) {
+        try {
+          localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
+        } catch (err) {}
+
+        mode = 'work';
+        remaining = workMinutes * 60;
+        totalTime = workMinutes * 60;
+
+        render();
+        startInterval();
+        return;
+      }
+
+      localStorage.removeItem(`currentAssignment_${user}`);
+      localStorage.removeItem(`currentAssignmentStart_${user}`);
+
+      alert('Break complete — returning to Main.');
+      window.location.href = 'Main.html';
+      return;
+    }
+
+    render();
+  }, 1000);
       }
 
       pauseBtn.addEventListener('click', function(){
@@ -310,12 +335,12 @@
           const endMs = Date.now();
           const minutesWorked = Math.round((endMs - startMs)/60000);
           addWorkSession({
-            assignment,
-            start: startMs,
-            end: endMs,
-            minutes: minutes,
-            completed: true
-          });
+          assignment,
+          start: startMs,
+          end: endMs,
+          minutes: minutesWorked,
+          completed: true
+        });
           localStorage.removeItem(`currentAssignment_${user}`);
           localStorage.removeItem(`currentAssignmentStart_${user}`);
         } catch (err) {}
@@ -341,8 +366,6 @@
       setTimeout(startInterval, 300);
     })();
     </script>
-    <script src="storage.js"></script>
-    <script src="theme.js"></script>
-    <script src="app.js"></script>
+    
   </body>
 </html>
