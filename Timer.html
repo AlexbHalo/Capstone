@@ -123,38 +123,7 @@
       closeCustomModeDialog();
     }
 
-    themeToggle.addEventListener('click', function(){
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-      if (customColors) applyCustomColors(customColors);
-    });
-    if (customModeBtn) customModeBtn.addEventListener('click', openCustomModeDialog);
-    if (saveCustomModeBtn) saveCustomModeBtn.addEventListener('click', saveCustomMode);
-    if (cancelCustomModeBtn) cancelCustomModeBtn.addEventListener('click', closeCustomModeDialog);
-    if (resetCustomModeBtn) resetCustomModeBtn.addEventListener('click', resetCustomMode);
-    if (customModeOverlay) customModeOverlay.addEventListener('click', closeCustomModeDialog);
-    loadCustomColors();
-    
-    (function(){
-      const display = document.getElementById('timerDisplay');
-      const modeName = document.getElementById('modeName');
-      const pauseBtn = document.getElementById('pauseBtn');
-      const completedBtn = document.getElementById('completedBtn');
-      const assignmentDisplay = document.getElementById('assignmentDisplay');
-      const progressBarFill = document.getElementById('progressBarFill');
-      const loopToggle = document.getElementById('loopToggle');
-
-      let loopMode = true;
-      function updateLoopToggleText(){
-        if (loopToggle) {
-          loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
-        }
-      }
-      
-      const user = localStorage.getItem('currentUser');
+    const user = localStorage.getItem('currentUser');
       if (!user) {
         alert("No user found. Returning to main.");
         window.location.href = "Main.html";
@@ -189,6 +158,83 @@
       let totalTime = workMinutes * 60; // track total time for progress calculation
       let interval = null;
       let paused = false;
+
+    themeToggle.addEventListener('click', function(){
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+      if (customColors) applyCustomColors(customColors);
+    });
+    if (customModeBtn) customModeBtn.addEventListener('click', openCustomModeDialog);
+    if (saveCustomModeBtn) saveCustomModeBtn.addEventListener('click', saveCustomMode);
+    if (cancelCustomModeBtn) cancelCustomModeBtn.addEventListener('click', closeCustomModeDialog);
+    if (resetCustomModeBtn) resetCustomModeBtn.addEventListener('click', resetCustomMode);
+    if (customModeOverlay) customModeOverlay.addEventListener('click', closeCustomModeDialog);
+    loadCustomColors();
+    
+    (function(){
+      const display = document.getElementById('timerDisplay');
+      const modeName = document.getElementById('modeName');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const completedBtn = document.getElementById('completedBtn');
+      const assignmentDisplay = document.getElementById('assignmentDisplay');
+      const progressBarFill = document.getElementById('progressBarFill');
+      const loopToggle = document.getElementById('loopToggle');
+
+      let loopMode = true;
+      function updateLoopToggleText(){
+        if (loopToggle) {
+          loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
+        }
+      }
+      pauseBtn.addEventListener('click', function(){
+      paused = !paused;
+      pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    });
+
+        const confirmDialog = document.getElementById('confirmDialog');
+        const dialogOverlay = document.getElementById('dialogOverlay');
+        const confirmYes = document.getElementById('confirmYes');
+        const confirmNo = document.getElementById('confirmNo');
+
+      completedBtn.addEventListener('click', function(){
+      confirmDialog.style.display = 'block';
+      dialogOverlay.style.display = 'block';
+    });
+
+      confirmYes.addEventListener('click', function(){
+      confirmDialog.style.display = 'none';
+      dialogOverlay.style.display = 'none';
+
+      try {
+        const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
+        const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
+        const endMs = Date.now();
+        const minutesWorked = Math.round((endMs - startMs)/60000);
+
+        addWorkSession({
+          assignment,
+          start: startMs,
+          end: endMs,
+          minutes: minutesWorked,
+          completed: true
+        });
+
+        localStorage.removeItem(`currentAssignment_${user}`);
+        localStorage.removeItem(`currentAssignmentStart_${user}`);
+      } catch (err) {}
+
+      window.location.href = 'worklog.html';
+    });
+
+    confirmNo.addEventListener('click', function(){
+      confirmDialog.style.display = 'none';
+      dialogOverlay.style.display = 'none';
+    });
+      
+      
 
       // Load saved timer state if exists
       const savedMode = localStorage.getItem('timerMode');
@@ -282,23 +328,28 @@
       }
 
       else {
-  if (loopMode) {
-    try {
-      localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
-    } catch (err) {}
+        if (loopMode) {
+          try {
+            localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
+          } catch (err) {}
 
-    mode = 'work';
-    remaining = workMinutes * 60;
-    totalTime = workMinutes * 60;
+          mode = 'work';
+          remaining = workMinutes * 60;
+          totalTime = workMinutes * 60;
 
-    render();
-    startInterval();
-    return;
-  }
+          render();
+          startInterval();
+          return;
+        }
 
-  // NOT looping → go back to main
- 
-  }}
+        // NOT looping → go back to main
+        localStorage.removeItem(`currentAssignment_${user}`);
+        localStorage.removeItem(`currentAssignmentStart_${user}`);
+
+        alert('Break complete — returning to Main.');
+        window.location.href = 'Main.html';
+        return;
+      }}
 
     render();
   }, 1000);
