@@ -11,6 +11,29 @@
 
 <h1>Work Log</h1>
 
+  <div id="themeControls">
+    <button id="themeToggle">Light Mode</button>
+    <button id="customModeBtn">Custom Mode</button>
+  </div>
+
+    <!-- CUSTOM COLORS -->
+  <div id="customModeDialog">
+    <h3>Custom Mode Colors</h3>
+    <div class="color-picker-row">
+      <label>Base<input type="color" id="customBaseColor"></label>
+      <label>Primary<input type="color" id="customPrimaryColor"></label>
+      <label>Sub<input type="color" id="customSubColor"></label>
+    </div>
+
+    <div class="modal-actions">
+      <button id="saveCustomMode">Save</button>
+      <button id="resetCustomMode">Reset</button>
+      <button id="cancelCustomMode">Cancel</button>
+    </div>
+  </div>
+
+  <div id="customModeOverlay"></div>
+
 <button onclick="window.location.href='Main.html'">Back</button>
 
 <div id="filterSection">
