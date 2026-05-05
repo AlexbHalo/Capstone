@@ -11,31 +11,33 @@
 
 <h1>Work Log</h1>
 
-  <div id="themeControls">
-    <button id="themeToggle">Light Mode</button>
-    <button id="customModeBtn">Custom Mode</button>
+<!-- THEME CONTROLS -->
+<div id="themeControls">
+  <button id="themeToggle">Light Mode</button>
+  <button id="customModeBtn">Custom Mode</button>
+</div>
+
+<!-- CUSTOM MODE UI -->
+<div id="customModeDialog">
+  <h3>Custom Mode Colors</h3>
+  <div class="color-picker-row">
+    <label>Base<input type="color" id="customBaseColor"></label>
+    <label>Primary<input type="color" id="customPrimaryColor"></label>
+    <label>Sub<input type="color" id="customSubColor"></label>
   </div>
 
-    <!-- CUSTOM COLORS -->
-  <div id="customModeDialog">
-    <h3>Custom Mode Colors</h3>
-    <div class="color-picker-row">
-      <label>Base<input type="color" id="customBaseColor"></label>
-      <label>Primary<input type="color" id="customPrimaryColor"></label>
-      <label>Sub<input type="color" id="customSubColor"></label>
-    </div>
-
-    <div class="modal-actions">
-      <button id="saveCustomMode">Save</button>
-      <button id="resetCustomMode">Reset</button>
-      <button id="cancelCustomMode">Cancel</button>
-    </div>
+  <div class="modal-actions">
+    <button id="saveCustomMode">Save</button>
+    <button id="resetCustomMode">Reset</button>
+    <button id="cancelCustomMode">Cancel</button>
   </div>
+</div>
 
-  <div id="customModeOverlay"></div>
+<div id="customModeOverlay"></div>
 
 <button onclick="window.location.href='Main.html'">Back</button>
 
+<!-- FILTERS -->
 <div id="filterSection">
   <h3>Filter</h3>
 
@@ -53,10 +55,13 @@
   <button id="clearFilters">Clear</button>
 </div>
 
+<!-- LOG OUTPUT -->
 <div id="logContainer"></div>
 
+<!-- IMPORTANT: LOAD SCRIPTS FIRST -->
 <script src="storage.js"></script>
 <script src="app.js"></script>
+<script src="theme.js"></script>
 
 <script>
 const user = localStorage.getItem('currentUser');
@@ -66,7 +71,9 @@ if (!user) {
   window.location.href = "Main.html";
 }
 
+// =====================
 // MAIN LOGIC
+// =====================
 (function(){
 
   const container = document.getElementById('logContainer');
@@ -88,8 +95,7 @@ if (!user) {
   }
 
   function format(ts){
-    const d = new Date(ts);
-    return d.toLocaleString();
+    return new Date(ts).toLocaleString();
   }
 
   function passFilters(s){
@@ -120,11 +126,13 @@ if (!user) {
     }
 
     container.innerHTML = filtered.map(s => `
-      <div style="border:1px solid #555; margin:10px; padding:10px;">
+      <div style="border:1px solid var(--accent-color); margin:10px; padding:10px; border-radius:6px;">
         <strong>${s.assignment}</strong><br>
         ${format(s.start)} → ${format(s.end)}<br>
         ${s.minutes} minutes<br>
-        ${s.completed ? '<span style="color:lime;">Completed</span>' : '<span style="color:red;">Not completed</span>'}
+        ${s.completed
+          ? '<span style="color:lime;">Completed</span>'
+          : '<span style="color:red;">Not completed</span>'}
       </div>
     `).join('');
   }

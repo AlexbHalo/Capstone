@@ -6,36 +6,20 @@
   <title>Timer</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
 <h1>Timer</h1>
 
-  <div id="themeControls">
-    <button id="themeToggle">Light Mode</button>
-    <button id="customModeBtn">Custom Mode</button>
-  </div>
+<!-- THEME CONTROLS -->
+<div id="themeControls">
+  <button id="themeToggle">Light Mode</button>
+  <button id="customModeBtn">Custom Mode</button>
+</div>
 
-    <!-- CUSTOM COLORS -->
-  <div id="customModeDialog">
-    <h3>Custom Mode Colors</h3>
-    <div class="color-picker-row">
-      <label>Base<input type="color" id="customBaseColor"></label>
-      <label>Primary<input type="color" id="customPrimaryColor"></label>
-      <label>Sub<input type="color" id="customSubColor"></label>
-    </div>
-
-    <div class="modal-actions">
-      <button id="saveCustomMode">Save</button>
-      <button id="resetCustomMode">Reset</button>
-      <button id="cancelCustomMode">Cancel</button>
-    </div>
-  </div>
-
-  <div id="customModeOverlay"></div>
-  
 <h2 id="assignmentDisplay"></h2>
 
-<div id="mode">Mode: <span id="modeName">Work</span></div>
+<div>Mode: <span id="modeName">Work</span></div>
 <div id="timerDisplay">00:00</div>
 
 <div>
@@ -50,30 +34,133 @@
 
 <button id="loopToggle">loop mode: on</button>
 
-<!-- Confirm dialog -->
-<div id="confirmDialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgb(0, 0, 0);padding:30px;border-radius:10px;z-index:999;">
+<!-- CUSTOM MODE -->
+<div id="customModeDialog" style="display:none;">
+  <h3>Custom Mode Colors</h3>
+  <label>Base <input type="color" id="customBaseColor"></label>
+  <label>Primary <input type="color" id="customPrimaryColor"></label>
+  <label>Sub <input type="color" id="customSubColor"></label>
+  <div>
+    <button id="saveCustomMode">Save</button>
+    <button id="resetCustomMode">Reset</button>
+    <button id="cancelCustomMode">Cancel</button>
+  </div>
+</div>
+<div id="customModeOverlay" style="display:none;"></div>
+
+<!-- CONFIRM -->
+<div id="confirmDialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;z-index:999;">
   <p>Are you done?</p>
   <button id="confirmYes">Yes</button>
   <button id="confirmNo">No</button>
 </div>
-
 <div id="dialogOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:998;"></div>
 
 <script src="storage.js"></script>
 <script src="app.js"></script>
 
+<!-- THEME SCRIPT -->
+<script>
+const themeToggle = document.getElementById('themeToggle');
+const customModeBtn = document.getElementById('customModeBtn');
+const customModeDialog = document.getElementById('customModeDialog');
+const customModeOverlay = document.getElementById('customModeOverlay');
+
+const customBaseColor = document.getElementById('customBaseColor');
+const customPrimaryColor = document.getElementById('customPrimaryColor');
+const customSubColor = document.getElementById('customSubColor');
+
+const saveCustomModeBtn = document.getElementById('saveCustomMode');
+const cancelCustomModeBtn = document.getElementById('cancelCustomMode');
+const resetCustomModeBtn = document.getElementById('resetCustomMode');
+
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+let customColors = null;
+
+function applyCustomColors(colors){
+  if (!colors) return;
+  document.documentElement.style.setProperty('--bg-primary', colors.base);
+  document.documentElement.style.setProperty('--accent-color', colors.primary);
+  document.documentElement.style.setProperty('--bg-secondary', colors.sub);
+}
+
+function loadCustomColors(){
+  try {
+    const stored = localStorage.getItem('customColors');
+    if (stored){
+      customColors = JSON.parse(stored);
+      applyCustomColors(customColors);
+    }
+  } catch(e){}
+}
+
+function openCustomMode(){
+  customModeDialog.style.display = 'block';
+  customModeOverlay.style.display = 'block';
+}
+
+function closeCustomMode(){
+  customModeDialog.style.display = 'none';
+  customModeOverlay.style.display = 'none';
+}
+
+function saveCustomMode(){
+  customColors = {
+    base: customBaseColor.value,
+    primary: customPrimaryColor.value,
+    sub: customSubColor.value
+  };
+  localStorage.setItem('customColors', JSON.stringify(customColors));
+  applyCustomColors(customColors);
+  closeCustomMode();
+}
+
+function resetCustomMode(){
+  localStorage.removeItem('customColors');
+  customColors = null;
+
+  document.documentElement.style.removeProperty('--bg-primary');
+  document.documentElement.style.removeProperty('--accent-color');
+  document.documentElement.style.removeProperty('--bg-secondary');
+
+  closeCustomMode();
+}
+
+themeToggle.onclick = () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+
+  themeToggle.textContent = next === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+  if (customColors) applyCustomColors(customColors);
+};
+
+customModeBtn.onclick = openCustomMode;
+saveCustomModeBtn.onclick = saveCustomMode;
+cancelCustomModeBtn.onclick = closeCustomMode;
+resetCustomModeBtn.onclick = resetCustomMode;
+customModeOverlay.onclick = closeCustomMode;
+
+loadCustomColors();
+</script>
+
+<!-- TIMER SCRIPT -->
 <script>
 const user = localStorage.getItem('currentUser');
 
-if (!user) {
-  alert("No user found.");
+if (!user){
+  alert("No user found");
   window.location.href = "Main.html";
 }
 
-// MAIN TIMER LOGIC
 (function(){
 
-  // DOM
   const display = document.getElementById('timerDisplay');
   const modeName = document.getElementById('modeName');
   const pauseBtn = document.getElementById('pauseBtn');
@@ -82,49 +169,54 @@ if (!user) {
   const progressBarFill = document.getElementById('progressBarFill');
   const loopToggle = document.getElementById('loopToggle');
 
-  // DATA
-  let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
-  let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
+  let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`),10);
+  let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`),10);
 
-  if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
-  if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
+  if (isNaN(workMinutes)) workMinutes = 25;
+  if (isNaN(breakMinutes)) breakMinutes = 5;
 
-  const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-  assignmentDisplay.textContent = currentAssignment;
+  const assignment = localStorage.getItem(`currentAssignment_${user}`) || "Untitled";
+  assignmentDisplay.textContent = assignment;
 
-  // LOOP MODE
-  let loopMode = true;
-  const savedLoopMode = localStorage.getItem('loopMode');
-  if (savedLoopMode !== null) {
-    loopMode = savedLoopMode === 'true';
-  }
+  let loopMode = localStorage.getItem('loopMode') === 'false' ? false : true;
 
-  function updateLoopText(){
+  function updateLoop(){
     loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
   }
 
-  loopToggle.addEventListener('click', function(){
+  loopToggle.onclick = () => {
     loopMode = !loopMode;
     localStorage.setItem('loopMode', loopMode);
-    updateLoopText();
-  });
+    updateLoop();
+  };
 
-  updateLoopText();
+  updateLoop();
 
-  // TIMER STATE
   let mode = 'work';
   let remaining = workMinutes * 60;
   let totalTime = remaining;
   let paused = false;
-  let interval = null;
 
-  // CONTROLS
   pauseBtn.onclick = () => {
     paused = !paused;
-    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    pauseBtn.textContent = paused ? "Resume" : "Pause";
   };
 
-  // COMPLETE BUTTON
+  function saveSession(){
+    try {
+      const start = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10)
+        || (Date.now() - workMinutes*60000);
+
+      addWorkSession({
+        assignment,
+        start,
+        end: Date.now(),
+        minutes: Math.round((Date.now()-start)/60000),
+        completed: true
+      });
+    } catch(e){}
+  }
+
   const confirmDialog = document.getElementById('confirmDialog');
   const dialogOverlay = document.getElementById('dialogOverlay');
 
@@ -134,8 +226,8 @@ if (!user) {
   };
 
   document.getElementById('confirmYes').onclick = () => {
-    saveSession(true);
-    window.location.href = 'worklog.html';
+    saveSession();
+    window.location.href = "worklog.html";
   };
 
   document.getElementById('confirmNo').onclick = () => {
@@ -143,80 +235,54 @@ if (!user) {
     dialogOverlay.style.display = 'none';
   };
 
-  function saveSession(completed){
-    try {
-      const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) 
-        || (Date.now() - workMinutes*60000);
-
-      const endMs = Date.now();
-
-      addWorkSession({
-        assignment: currentAssignment,
-        start: startMs,
-        end: endMs,
-        minutes: Math.round((endMs - startMs)/60000),
-        completed: completed
-      });
-
-    } catch(e){}
-  }
-
-  // DISPLAY
-  function formatTime(s){
+  function format(s){
     const m = Math.floor(s/60);
     const sec = s % 60;
     return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
   }
 
   function render(){
-    display.textContent = formatTime(remaining);
+    display.textContent = format(remaining);
     modeName.textContent = mode === 'work' ? 'Work' : 'Break';
 
-    const progress = totalTime > 0 ? (totalTime - remaining)/totalTime : 0;
+    const progress = (totalTime - remaining) / totalTime;
     progressBarFill.style.width = (progress*100) + '%';
   }
 
-  // TIMER LOOP
-  function start(){
-    interval = setInterval(() => {
+  setInterval(() => {
 
-      if (paused) return;
+    if (paused) return;
 
-      remaining--;
+    remaining--;
 
-      if (remaining <= 0){
+    if (remaining <= 0){
 
-        if (mode === 'work'){
-          saveSession(true);
+      if (mode === 'work'){
+        saveSession();
 
-          alert('Work done → break');
+        mode = 'break';
+        remaining = breakMinutes * 60;
+        totalTime = remaining;
 
-          mode = 'break';
-          remaining = breakMinutes * 60;
+      } else {
+
+        if (loopMode){
+          localStorage.setItem(`currentAssignmentStart_${user}`, Date.now());
+          mode = 'work';
+          remaining = workMinutes * 60;
           totalTime = remaining;
         } else {
-
-          if (loopMode){
-            localStorage.setItem(`currentAssignmentStart_${user}`, Date.now());
-
-            mode = 'work';
-            remaining = workMinutes * 60;
-            totalTime = remaining;
-          } else {
-            alert('Done');
-            window.location.href = 'Main.html';
-            return;
-          }
+          window.location.href = "Main.html";
+          return;
         }
       }
+    }
 
-      render();
+    render();
 
-    }, 1000);
-  }
+  }, 1000);
 
   render();
-  start();
 
 })();
 </script>
