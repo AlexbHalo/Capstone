@@ -50,16 +50,9 @@
     <script src="app.js"></script>
     <script src="theme.js"></script>
     <script>
-    let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
-    let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
-
-    if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
-    if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
-
-    const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-    assignmentDisplay.textContent = currentAssignment;
-    // Theme toggle setup
     const user = localStorage.getItem('currentUser');
+    // Theme toggle setup
+    
     const themeToggle = document.getElementById('themeToggle');
     const customModeBtn = document.getElementById('customModeBtn');
     const customModeDialog = document.getElementById('customModeDialog');
@@ -147,40 +140,18 @@
       }
 
       const loopToggle = document.getElementById('loopToggle');
-      if (loopToggle) {
+      function updateLoopToggleText(){
+        loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
+      }
+
       loopToggle.addEventListener('click', function(){
         loopMode = !loopMode;
         localStorage.setItem('loopMode', String(loopMode));
+        updateLoopToggleText();
       });
-      updateLoopToggleText();
-        function updateLoopToggleText(){
-        if (loopToggle) {
-          loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
-          if (loopMode) {
-          try {
-            localStorage.setItem(`currentAssignmentStart_${user}`, String(Date.now()));
-          } catch (err) {}
 
-          mode = 'work';
-          remaining = workMinutes * 60;
-          totalTime = workMinutes * 60;
-
-          render();
-          startInterval();
-          return;
-        }
-        }
-      }
-    }
-      
-
-      
-
-
-      let mode = 'work'; // 'work' or 'break'
-      let remaining = workMinutes * 60;
-      let totalTime = workMinutes * 60; // track total time for progress calculation
-      
+updateLoopToggleText();
+        
     themeToggle.addEventListener('click', function(){
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -202,7 +173,37 @@
       const pauseBtn = document.getElementById('pauseBtn');
       const completedBtn = document.getElementById('completedBtn');
       const assignmentDisplay = document.getElementById('assignmentDisplay');
+      let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
+      let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
+      const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
+      assignmentDisplay.textContent = currentAssignment;
+      let mode = 'work'; // 'work' or 'break'
+      let remaining = workMinutes * 60;
+      let totalTime = workMinutes * 60; // track total time for progress calculation
+      if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
+      if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
       const progressBarFill = document.getElementById('progressBarFill');
+
+        let loopMode = true;
+
+        const loopToggle = document.getElementById('loopToggle');
+
+        function updateLoopToggleText(){
+          loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
+        }
+
+        const savedLoopMode = localStorage.getItem('loopMode');
+        if (savedLoopMode !== null) {
+          loopMode = savedLoopMode === 'true';
+        }
+
+        updateLoopToggleText();
+
+        loopToggle.addEventListener('click', function(){
+          loopMode = !loopMode;
+          localStorage.setItem('loopMode', String(loopMode));
+          updateLoopToggleText();
+        });
       
       
 
