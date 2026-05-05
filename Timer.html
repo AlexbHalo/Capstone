@@ -1,353 +1,202 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <h1>Timer</h1>
-    <div id="notification" style="display:none; position:fixed; inset-block-start:10px; inset-inline-start:50%; transform:translateX(-50%); background:#ffeb3b; color:black; padding:10px 20px; border-radius:5px; box-shadow:0 2px 10px rgba(0,0,0,0.3); z-index:1000; font-size:1.1rem;"></div>
-    <div id="themeControls">
-      <button id="themeToggle">Light Mode</button>
-      <button id="customModeBtn">Custom Mode</button>
-    </div>
-    <h2 id="assignmentDisplay"></h2>
-    <div id="mode">Mode: <span id="modeName">Work</span></div>
-    <div id="timerDisplay">00:00</div>
-    <div>
-      <button id="pauseBtn">Pause</button>
-      <button id="completedBtn">Completed</button>
-      <button onclick="window.location.href='Main.html'">Back</button>
-    </div>
-    <div id="progressBarContainer">
-      <div id="progressBarFill"></div>
-    </div>
-    <button id="loopToggle">loop mode: on</button>
-    <div id="customModeDialog">
-      <h3>Custom Mode Colors</h3>
-      <div class="color-picker-row">
-        <label>Base<input type="color" id="customBaseColor"></label>
-        <label>Primary<input type="color" id="customPrimaryColor"></label>
-        <label>Sub<input type="color" id="customSubColor"></label>
-      </div>
-      <div class="modal-actions">
-        <button id="saveCustomMode">Save</button>
-        <button id="resetCustomMode">Reset</button>
-        <button id="cancelCustomMode">Cancel</button>
-      </div>
-    </div>
-    <div id="customModeOverlay"></div>
-    <!-- Custom confirmation dialog -->
-    <div id="confirmDialog" style="display:none;position:fixed;inset-block-start:50%;inset-inline-start:50%;transform:translate(-50%,-50%);background:white;padding:30px;border-radius:10px;box-shadow:0 0 30px rgba(0,0,0,0.5);z-index:999;text-align:center;border:2px solid palegoldenrod;">
-      <p style="color:black;font-size:1.2rem;margin:0 0 30px 0;">Are you done with your work?</p>
-      <button id="confirmYes" style="background-color:#4caf50;color:white;margin:0 10px;padding:12px 30px;border:none;border-radius:6px;cursor:pointer;font-size:1.1rem;">Yes</button>
-      <button id="confirmNo" style="background-color:#f44336;color:white;margin:0 10px;padding:12px 30px;border:none;border-radius:6px;cursor:pointer;font-size:1.1rem;">No</button>
-    </div>
-    <div id="dialogOverlay" style="display:none;position:fixed;inset-block-start:0;inset-inline-start:0;inset-inline-end:0;inset-block-end:0;background:rgba(0,0,0,0.5);z-index:998;"></div>
-    <script src="storage.js"></script>
-    <script src="app.js"></script>
-    <script src="theme.js"></script>
-    <script>
-    const user = localStorage.getItem('currentUser');
-    // Theme toggle setup
-    
-    const themeToggle = document.getElementById('themeToggle');
-    const customModeBtn = document.getElementById('customModeBtn');
-    const customModeDialog = document.getElementById('customModeDialog');
-    const customModeOverlay = document.getElementById('customModeOverlay');
-    const customBaseColor = document.getElementById('customBaseColor');
-    const customPrimaryColor = document.getElementById('customPrimaryColor');
-    const customSubColor = document.getElementById('customSubColor');
-    const saveCustomModeBtn = document.getElementById('saveCustomMode');
-    const cancelCustomModeBtn = document.getElementById('cancelCustomMode');
-    const resetCustomModeBtn = document.getElementById('resetCustomMode');
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+<h1>Timer</h1>
 
-    let customColors = null;
-    function toHex(color) {
-      const ctx = document.createElement('canvas').getContext('2d');
-      ctx.fillStyle = color;
-      return ctx.fillStyle;
-    }
-    function applyCustomColors(colors) {
-      if (!colors) return;
-      document.documentElement.style.setProperty('--bg-primary', colors.base);
-      document.documentElement.style.setProperty('--accent-color', colors.primary);
-      document.documentElement.style.setProperty('--bg-secondary', colors.sub);
-    }
-    function loadCustomColors() {
-      try {
-        const stored = localStorage.getItem('customColors');
-        if (stored) {
-          customColors = JSON.parse(stored);
-          applyCustomColors(customColors);
-        }
-      } catch (err) {}
-    }
-    function closeCustomModeDialog() {
-      if (customModeDialog) customModeDialog.style.display = 'none';
-      if (customModeOverlay) customModeOverlay.style.display = 'none';
-    }
-    function openCustomModeDialog() {
-      const styles = getComputedStyle(document.documentElement);
-      const current = customColors || {
-        base: toHex(styles.getPropertyValue('--bg-primary').trim()),
-        primary: toHex(styles.getPropertyValue('--accent-color').trim()),
-        sub: toHex(styles.getPropertyValue('--bg-secondary').trim())
-      };
-      customBaseColor.value = current.base;
-      customPrimaryColor.value = current.primary;
-      customSubColor.value = current.sub;
-      if (customModeDialog) customModeDialog.style.display = 'block';
-      if (customModeOverlay) customModeOverlay.style.display = 'block';
-    }
-    function resetCustomMode() {
-      localStorage.removeItem('customColors');
-      customColors = null;
-      document.documentElement.style.removeProperty('--bg-primary');
-      document.documentElement.style.removeProperty('--accent-color');
-      document.documentElement.style.removeProperty('--bg-secondary');
-      closeCustomModeDialog();
-    }
-    function saveCustomMode() {
-      customColors = {
-        base: customBaseColor.value,
-        primary: customPrimaryColor.value,
-        sub: customSubColor.value
-      };
-      localStorage.setItem('customColors', JSON.stringify(customColors));
-      applyCustomColors(customColors);
-      closeCustomModeDialog();
-    }
-    
-      if (!user) {
-        alert("No user found. Returning to main.");
-        window.location.href = "Main.html";
-        return;
-      }
-      // Get and display the current assignment
-        
-      themeToggle.addEventListener('click', function(){
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      themeToggle.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
-      if (customColors) applyCustomColors(customColors);
-    });
-    if (customModeBtn) customModeBtn.addEventListener('click', openCustomModeDialog);
-    if (saveCustomModeBtn) saveCustomModeBtn.addEventListener('click', saveCustomMode);
-    if (cancelCustomModeBtn) cancelCustomModeBtn.addEventListener('click', closeCustomModeDialog);
-    if (resetCustomModeBtn) resetCustomModeBtn.addEventListener('click', resetCustomMode);
-    if (customModeOverlay) customModeOverlay.addEventListener('click', closeCustomModeDialog);
-    loadCustomColors();
-    
-    (function(){
-      const display = document.getElementById('timerDisplay');
-      const modeName = document.getElementById('modeName');
-      const pauseBtn = document.getElementById('pauseBtn');
-      const completedBtn = document.getElementById('completedBtn');
-      const assignmentDisplay = document.getElementById('assignmentDisplay');
-      let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
-      let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
-      const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-      assignmentDisplay.textContent = currentAssignment;
-      let mode = 'work'; // 'work' or 'break'
-      let remaining = workMinutes * 60;
-      let totalTime = workMinutes * 60; // track total time for progress calculation
-      if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
-      if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
-      const progressBarFill = document.getElementById('progressBarFill');
+<h2 id="assignmentDisplay"></h2>
 
-        let loopMode = true;
+<div id="mode">Mode: <span id="modeName">Work</span></div>
+<div id="timerDisplay">00:00</div>
 
-        const loopToggle = document.getElementById('loopToggle');
+<div>
+  <button id="pauseBtn">Pause</button>
+  <button id="completedBtn">Completed</button>
+  <button onclick="window.location.href='Main.html'">Back</button>
+</div>
 
-        function updateLoopToggleText(){
-          loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
-        }
+<div id="progressBarContainer">
+  <div id="progressBarFill"></div>
+</div>
 
-        const savedLoopMode = localStorage.getItem('loopMode');
-        if (savedLoopMode !== null) {
-          loopMode = savedLoopMode === 'true';
-        }
+<button id="loopToggle">loop mode: on</button>
 
-        updateLoopToggleText();
+<!-- Confirm dialog -->
+<div id="confirmDialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgb(0, 0, 0);padding:30px;border-radius:10px;z-index:999;">
+  <p>Are you done?</p>
+  <button id="confirmYes">Yes</button>
+  <button id="confirmNo">No</button>
+</div>
 
-        loopToggle.addEventListener('click', function(){
-          loopMode = !loopMode;
-          localStorage.setItem('loopMode', String(loopMode));
-          updateLoopToggleText();
-        });
-      
-      
+<div id="dialogOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:998;"></div>
 
-      let paused = false;
-      let interval = null;
-      
-      
-      pauseBtn.addEventListener('click', function(){
-      paused = !paused;
-      pauseBtn.textContent = paused ? 'Resume' : 'Pause';
-    });
+<script src="storage.js"></script>
+<script src="app.js"></script>
 
-        const confirmDialog = document.getElementById('confirmDialog');
-        const dialogOverlay = document.getElementById('dialogOverlay');
-        const confirmYes = document.getElementById('confirmYes');
-        const confirmNo = document.getElementById('confirmNo');
+<script>
+const user = localStorage.getItem('currentUser');
 
-      completedBtn.addEventListener('click', function(){
-      confirmDialog.style.display = 'block';
-      dialogOverlay.style.display = 'block';
-    });
+if (!user) {
+  alert("No user found.");
+  window.location.href = "Main.html";
+}
 
-      confirmYes.addEventListener('click', function(){
-      confirmDialog.style.display = 'none';
-      dialogOverlay.style.display = 'none';
+// MAIN TIMER LOGIC
+(function(){
 
-      try {
-        const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-        const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
-        const endMs = Date.now();
-        const minutesWorked = Math.round((endMs - startMs)/60000);
+  // DOM
+  const display = document.getElementById('timerDisplay');
+  const modeName = document.getElementById('modeName');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const completedBtn = document.getElementById('completedBtn');
+  const assignmentDisplay = document.getElementById('assignmentDisplay');
+  const progressBarFill = document.getElementById('progressBarFill');
+  const loopToggle = document.getElementById('loopToggle');
 
-        addWorkSession({
-          assignment,
-          start: startMs,
-          end: endMs,
-          minutes: minutesWorked,
-          completed: true
-        });
+  // DATA
+  let workMinutes = parseInt(localStorage.getItem(`workMinutes_${user}`), 10);
+  let breakMinutes = parseInt(localStorage.getItem(`breakMinutes_${user}`), 10);
 
-        localStorage.removeItem(`currentAssignment_${user}`);
-        localStorage.removeItem(`currentAssignmentStart_${user}`);
-      } catch (err) {}
+  if (isNaN(workMinutes) || workMinutes < 1) workMinutes = 25;
+  if (isNaN(breakMinutes) || breakMinutes < 1) breakMinutes = 5;
 
-      window.location.href = 'worklog.html';
-    });
+  const currentAssignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
+  assignmentDisplay.textContent = currentAssignment;
 
-    confirmNo.addEventListener('click', function(){
-      confirmDialog.style.display = 'none';
-      dialogOverlay.style.display = 'none';
-    });
-      
-      
+  // LOOP MODE
+  let loopMode = true;
+  const savedLoopMode = localStorage.getItem('loopMode');
+  if (savedLoopMode !== null) {
+    loopMode = savedLoopMode === 'true';
+  }
 
-      // Load saved timer state if exists
-      const savedMode = localStorage.getItem('timerMode');
-      if (savedMode) {
-        mode = savedMode;
-        remaining = parseInt(localStorage.getItem('timerRemaining'), 10);
-        totalTime = parseInt(localStorage.getItem('timerTotalTime'), 10);
+  function updateLoopText(){
+    loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
+  }
 
-        if (isNaN(remaining)) remaining = workMinutes * 60;
-        if (isNaN(totalTime)) totalTime = workMinutes * 60;
-        
-        paused = localStorage.getItem('timerPaused') === 'true';
+  loopToggle.addEventListener('click', function(){
+    loopMode = !loopMode;
+    localStorage.setItem('loopMode', loopMode);
+    updateLoopText();
+  });
 
-        localStorage.removeItem('timerMode');
-        localStorage.removeItem('timerRemaining');
-        localStorage.removeItem('timerTotalTime');
-        localStorage.removeItem('timerPaused');
-      }
+  updateLoopText();
 
-      // Save timer state on page unload
-      window.addEventListener('beforeunload', function() {
-        localStorage.setItem('timerMode', mode);
-        localStorage.setItem('timerRemaining', remaining);
-        localStorage.setItem('timerTotalTime', totalTime);
-        localStorage.setItem('timerPaused', paused);
+  // TIMER STATE
+  let mode = 'work';
+  let remaining = workMinutes * 60;
+  let totalTime = remaining;
+  let paused = false;
+  let interval = null;
+
+  // CONTROLS
+  pauseBtn.onclick = () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+  };
+
+  // COMPLETE BUTTON
+  const confirmDialog = document.getElementById('confirmDialog');
+  const dialogOverlay = document.getElementById('dialogOverlay');
+
+  completedBtn.onclick = () => {
+    confirmDialog.style.display = 'block';
+    dialogOverlay.style.display = 'block';
+  };
+
+  document.getElementById('confirmYes').onclick = () => {
+    saveSession(true);
+    window.location.href = 'worklog.html';
+  };
+
+  document.getElementById('confirmNo').onclick = () => {
+    confirmDialog.style.display = 'none';
+    dialogOverlay.style.display = 'none';
+  };
+
+  function saveSession(completed){
+    try {
+      const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) 
+        || (Date.now() - workMinutes*60000);
+
+      const endMs = Date.now();
+
+      addWorkSession({
+        assignment: currentAssignment,
+        start: startMs,
+        end: endMs,
+        minutes: Math.round((endMs - startMs)/60000),
+        completed: completed
       });
 
-      function showNotification(message) {
-        const notif = document.getElementById('notification');
-        notif.textContent = message;
-        notif.style.display = 'block';
-        setTimeout(() => {
-          notif.style.display = 'none';
-        }, 3000);
+    } catch(e){}
+  }
+
+  // DISPLAY
+  function formatTime(s){
+    const m = Math.floor(s/60);
+    const sec = s % 60;
+    return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  }
+
+  function render(){
+    display.textContent = formatTime(remaining);
+    modeName.textContent = mode === 'work' ? 'Work' : 'Break';
+
+    const progress = totalTime > 0 ? (totalTime - remaining)/totalTime : 0;
+    progressBarFill.style.width = (progress*100) + '%';
+  }
+
+  // TIMER LOOP
+  function start(){
+    interval = setInterval(() => {
+
+      if (paused) return;
+
+      remaining--;
+
+      if (remaining <= 0){
+
+        if (mode === 'work'){
+          saveSession(true);
+
+          alert('Work done → break');
+
+          mode = 'break';
+          remaining = breakMinutes * 60;
+          totalTime = remaining;
+        } else {
+
+          if (loopMode){
+            localStorage.setItem(`currentAssignmentStart_${user}`, Date.now());
+
+            mode = 'work';
+            remaining = workMinutes * 60;
+            totalTime = remaining;
+          } else {
+            alert('Done');
+            window.location.href = 'Main.html';
+            return;
+          }
+        }
       }
 
-      function formatTime(s){
-        const m = Math.floor(s/60);
-        const sec = s % 60;
-        return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-      }
+      render();
 
-      function render(){
-        display.textContent = formatTime(remaining);
-        modeName.textContent = mode === 'work' ? 'Work' : 'Break';
-        // Update progress bar
-        const progress = totalTime > 0
-        ? (totalTime - remaining) / totalTime
-        : 0;
-        progressBarFill.style.width = (progress * 100) + '%';
-      }
+    }, 1000);
+  }
 
-    function startInterval(){
-    if (interval) clearInterval(interval);
-
-    interval = setInterval(function(){
-    if (paused) return;
-
-    remaining = Math.max(0, remaining - 1);
-    if (remaining <= 0){
-      clearInterval(interval);
-      interval = null;
-
-      remaining = 0; // clamp
-
-      if (mode === 'work'){
-        try {
-          const assignment = localStorage.getItem(`currentAssignment_${user}`) || 'Untitled';
-          const startMs = parseInt(localStorage.getItem(`currentAssignmentStart_${user}`),10) || (Date.now() - workMinutes*60*1000);
-          const endMs = Date.now();
-          const minutes = Math.round((endMs - startMs)/60000);
-
-          addWorkSession({
-            assignment,
-            start: startMs,
-            end: endMs,
-            minutes: minutes,
-            completed: true
-          });
-        } catch (err) {}
-
-        alert('Work period complete — starting break.');
-
-        mode = 'break';
-        remaining = breakMinutes * 60;
-        totalTime = breakMinutes * 60;
-
-        render();
-        startInterval();
-        return;
-      }
-
-      else {
-
-        // NOT looping → go back to main
-        localStorage.removeItem(`currentAssignment_${user}`);
-        localStorage.removeItem(`currentAssignmentStart_${user}`);
-
-        alert('Break complete — returning to Main.');
-        window.location.href = 'Main.html';
-        return;
-      }}
-
-    render();
-  }, 1000);
-}
-// initialize and auto-start
   render();
-  setTimeout(startInterval, 300);
+  start();
 
 })();
-    </script>
-  </body>
+</script>
+
+</body>
 </html>

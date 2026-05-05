@@ -16,3 +16,20 @@ function setUserData(key, value) {
 
   localStorage.setItem(`${key}_${user}`, JSON.stringify(value));
 }
+
+function getWorkSessions(){
+  const user = localStorage.getItem('currentUser');
+  const raw = localStorage.getItem(`workSessions_${user}`);
+  return raw ? JSON.parse(raw) : [];
+}
+
+function saveWorkSessions(sessions){
+  const user = localStorage.getItem('currentUser');
+  localStorage.setItem(`workSessions_${user}`, JSON.stringify(sessions));
+}
+
+function addWorkSession(session){
+  const sessions = getWorkSessions();
+  sessions.push(session);
+  saveWorkSessions(sessions);
+}
