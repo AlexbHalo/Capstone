@@ -124,7 +124,6 @@
       applyCustomColors(customColors);
       closeCustomModeDialog();
     }
-
     
       if (!user) {
         alert("No user found. Returning to main.");
@@ -132,27 +131,8 @@
         return;
       }
       // Get and display the current assignment
-      
-      let loopMode = true;
-      const savedLoopMode = localStorage.getItem('loopMode');
-      if (savedLoopMode !== null) {
-        loopMode = savedLoopMode === 'true';
-      }
-
-      const loopToggle = document.getElementById('loopToggle');
-      function updateLoopToggleText(){
-        loopToggle.textContent = loopMode ? 'loop mode: on' : 'loop mode: off';
-      }
-
-      loopToggle.addEventListener('click', function(){
-        loopMode = !loopMode;
-        localStorage.setItem('loopMode', String(loopMode));
-        updateLoopToggleText();
-      });
-
-updateLoopToggleText();
         
-    themeToggle.addEventListener('click', function(){
+      themeToggle.addEventListener('click', function(){
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', newTheme);
