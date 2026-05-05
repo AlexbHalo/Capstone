@@ -167,6 +167,8 @@
       // Load the WORKLOG.md file and display as preformatted text,
       // then append any recorded sessions from localStorage.
       (function(){
+        const user = localStorage.getItem('currentUser');
+        const sessionsRaw = localStorage.getItem(`workSessions_${user}`);
         const out = document.getElementById('log');
         const filterAssignmentInput = document.getElementById('filterAssignment');
         const filterStatus = document.getElementById('filterStatus');
