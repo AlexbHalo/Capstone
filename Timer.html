@@ -61,6 +61,7 @@
 
 <!-- THEME SCRIPT -->
 <script>
+initTheme();
 const themeToggle = document.getElementById('themeToggle');
 const customModeBtn = document.getElementById('customModeBtn');
 const customModeDialog = document.getElementById('customModeDialog');
@@ -212,7 +213,7 @@ if (!user){
         start,
         end: Date.now(),
         minutes: Math.round((Date.now()-start)/60000),
-        completed: true
+        completed: false
       });
     } catch(e){}
   }

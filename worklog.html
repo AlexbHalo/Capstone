@@ -64,6 +64,7 @@
 <script src="theme.js"></script>
 
 <script>
+initTheme();
 const user = localStorage.getItem('currentUser');
 
 if (!user) {
@@ -88,7 +89,7 @@ if (!user) {
 
   function loadSessions(){
     try {
-      sessions = getWorkSessions(); // ✅ uses user-based storage
+      sessions = getWorkSessions(); //uses user-based storage
     } catch(e){
       sessions = [];
     }
