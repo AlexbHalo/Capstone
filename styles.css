@@ -243,7 +243,7 @@ select {
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-#progressBarFill {
+ /*Quality Of Life*/ #progressBarFill {
   height: 100%;
   background-color: var(--accent-color);
   width: 0%;
